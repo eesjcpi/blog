@@ -1,0 +1,98 @@
+backend:
+  name: github
+  repo: eesjcpi/blog
+  branch: main
+  base_url: https://ee-sao-jose-blog-auth.rodrigoraa254.workers.dev
+  auth_endpoint: auth
+
+locale: pt
+site_url: https://eesjcpi.github.io/blog/
+display_url: https://eesjcpi.github.io/blog/
+logo_url: https://eesjcpi.github.io/blog/assets/img/logo_escola.png
+
+media_folder: assets/uploads
+public_folder: /assets/uploads
+
+publish_mode: simple
+
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: "-"
+
+collections:
+  - name: postagens
+    label: Postagens
+    label_singular: Postagem
+    folder: content/postagens
+    create: true
+    delete: true
+    extension: json
+    format: json
+    identifier_field: titulo
+    summary: "{{categoria}} — {{titulo}}"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    sortable_fields: [data, titulo, categoria]
+    fields:
+      - label: Título
+        name: titulo
+        widget: string
+
+      - label: Categoria
+        name: categoria
+        widget: select
+        options:
+          - { label: "Avisos", value: "avisos" }
+          - { label: "Projetos", value: "projetos" }
+          - { label: "Galeria", value: "galeria" }
+          - { label: "Instagram", value: "instagram" }
+          - { label: "Vestibular", value: "vestibular" }
+
+      - label: Data
+        name: data
+        widget: datetime
+        date_format: "DD/MM/YYYY"
+        time_format: "HH:mm"
+        format: "YYYY-MM-DDTHH:mm:ssZ"
+
+      - label: Resumo
+        name: resumo
+        widget: text
+        hint: Texto curto exibido no card da página inicial.
+
+      - label: Conteúdo completo
+        name: body
+        widget: markdown
+        required: false
+
+      - label: Imagem
+        name: imagem
+        widget: image
+        required: false
+        hint: Use para Avisos, Projetos, Galeria ou Vestibular. A imagem será salva no repositório.
+
+      - label: Link da publicação no Instagram
+        name: instagram_url
+        widget: string
+        required: false
+        pattern:
+          - "^https://(www\\.)?instagram\\.com/(p|reel|tv)/.+"
+          - "Informe um link válido de publicação ou reel do Instagram."
+        hint: Obrigatório para a categoria Instagram. Também pode ser usado em Projetos.
+
+      - label: Link externo
+        name: link_externo
+        widget: string
+        required: false
+        hint: Útil para vestibulares, formulários e páginas externas.
+
+      - label: Publicado
+        name: publicado
+        widget: boolean
+        default: true
+
+      - label: Destaque
+        name: destaque
+        widget: boolean
+        default: false
+        required: false

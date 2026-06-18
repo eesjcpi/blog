@@ -1,0 +1,7 @@
+name = "ee-sao-jose-blog-auth"
+main = "src/index.js"
+compatibility_date = "2026-06-18"
+
+[vars]
+ALLOWED_ORIGINS = "https://eesjcpi.github.io,http://127.0.0.1:5500"
+GITHUB_SCOPE = "public_repo,user:email"
