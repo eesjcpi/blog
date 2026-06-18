@@ -1,0 +1,230 @@
+:root {
+    --page: #f7f8ff;
+    --surface: #fff;
+    --surface-soft: #fff4ea;
+    --ink: #111338;
+    --muted: #62657b;
+    --line: #dedff0;
+    --brand: #1b03b9;
+    --brand-dark: #100646;
+    --orange: #ff8128;
+    --shadow: 0 12px 34px rgba(16, 6, 70, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.preview-page {
+    min-height: 100vh;
+    padding: 28px;
+}
+
+.preview-heading {
+    margin-bottom: 24px;
+}
+
+.preview-heading > span,
+.preview-content > span,
+.preview-meta {
+    color: var(--orange);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.preview-heading h1 {
+    margin: 8px 0;
+    color: var(--brand-dark);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    line-height: 1.05;
+}
+
+.preview-heading p,
+.preview-summary,
+.preview-project-body p,
+.preview-instagram-body p {
+    color: var(--muted);
+    line-height: 1.55;
+}
+
+.preview-stage {
+    margin-bottom: 30px;
+}
+
+.preview-notice-card,
+.preview-project-card,
+.preview-gallery-card,
+.preview-instagram-card,
+.preview-admission-card,
+.preview-content {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.preview-notice-card {
+    display: grid;
+    gap: 8px;
+    border-color: #f4cda8;
+    padding: 18px;
+}
+
+.preview-notice-card > span,
+.preview-admission-card > span {
+    color: var(--orange);
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.preview-notice-card h3,
+.preview-notice-card p,
+.preview-project-body h3,
+.preview-project-body p,
+.preview-instagram-body h3,
+.preview-instagram-body p {
+    margin: 0;
+}
+
+.preview-project-card,
+.preview-instagram-card {
+    max-width: 520px;
+    overflow: hidden;
+}
+
+.preview-project-media {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--surface-soft);
+}
+
+.preview-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-placeholder {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    min-height: 260px;
+    place-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--brand), #e60000 60%, var(--orange));
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+.preview-project-body,
+.preview-instagram-body {
+    display: grid;
+    gap: 10px;
+    padding: 16px;
+}
+
+.preview-gallery-card {
+    position: relative;
+    height: 340px;
+    overflow: hidden;
+    color: #fff;
+}
+
+.preview-gallery-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 45%, rgba(16, 6, 70, 0.86));
+}
+
+.preview-gallery-card > span {
+    position: absolute;
+    z-index: 1;
+    right: 18px;
+    bottom: 18px;
+    left: 18px;
+    font-size: 1.2rem;
+    font-weight: 900;
+}
+
+.preview-instagram-media {
+    display: grid;
+    height: 420px;
+    place-content: center;
+    gap: 10px;
+    overflow: hidden;
+    background: linear-gradient(145deg, #fff, #f0eaff);
+    color: var(--brand-dark);
+    text-align: center;
+    padding: 30px;
+}
+
+.preview-instagram-media span {
+    color: var(--orange);
+    font-size: 0.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.preview-instagram-media small {
+    max-width: 360px;
+    overflow-wrap: anywhere;
+    color: var(--muted);
+}
+
+.preview-meta {
+    display: flex;
+    gap: 10px;
+}
+
+.preview-admission-card {
+    display: grid;
+    gap: 9px;
+    min-height: 170px;
+    align-content: start;
+    padding: 20px;
+}
+
+.preview-admission-card strong {
+    color: var(--brand-dark);
+    font-size: 1.12rem;
+}
+
+.preview-admission-card small {
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.preview-content {
+    padding: clamp(22px, 5vw, 42px);
+}
+
+.preview-content h2 {
+    margin: 10px 0;
+    color: var(--brand-dark);
+    font-size: clamp(1.7rem, 4vw, 2.8rem);
+}
+
+.preview-body {
+    color: #273047;
+    line-height: 1.7;
+}
+
+.preview-body img {
+    max-width: 100%;
+}
+
+@media (max-width: 700px) {
+    .preview-page {
+        padding: 18px;
+    }
+}
