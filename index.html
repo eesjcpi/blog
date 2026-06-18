@@ -15,7 +15,6 @@
     <header class="site-header">
         <div class="top-strip">
             <span>Escola Estadual São José</span>
-            <a href="https://meteo.eesjv.com.br/">Estação meteorológica</a>
         </div>
         <div class="brand-row">
             <a class="school-brand" href="index.html#inicio" aria-label="Página inicial">
@@ -40,7 +39,8 @@
         <a href="index.html#galeria">Galeria</a>
         <a href="index.html#instagram">Instagram</a>
         <a href="index.html#vestibular">Vestibular</a>
-        <a href="https://meteo.eesjv.com.br/">Estação</a>
+        <a href="posts/2022-10-05-estacao-meteorologica-ee-sao-jose.html">Estação meteorológica</a>
+        <button class="nav-alert-button" type="button" data-open-weather-alerts>Receber alertas de tempestades</button>
         <a href="index.html#contato">Contato</a>
     </nav>
     
@@ -3152,6 +3152,38 @@
     </main>
     
     
+    <div class="weather-alert-modal" data-weather-alert-modal hidden aria-hidden="true">
+        <div class="weather-alert-dialog" role="dialog" aria-modal="true" aria-labelledby="weather-alert-title">
+            <button class="weather-alert-close" type="button" data-close-weather-alerts aria-label="Fechar cadastro">×</button>
+            <span class="weather-alert-eyebrow">Alertas pelo WhatsApp</span>
+            <h2 id="weather-alert-title">Receber alertas de tempestades</h2>
+            <p>Cadastre-se para receber avisos meteorológicos enviados pela estação da EE São José.</p>
+
+            <form class="weather-alert-form" method="POST" action="https://meteo.eesjv.com.br/">
+                <label>
+                    <span>Nome</span>
+                    <input type="text" name="nome" autocomplete="name" placeholder="Seu nome" required>
+                </label>
+                <label>
+                    <span>WhatsApp</span>
+                    <input type="tel" name="telefone" data-weather-phone autocomplete="tel" placeholder="(67) 99999-9999" required>
+                </label>
+                <label>
+                    <span>Endereço, fazenda ou bairro</span>
+                    <input type="text" name="endereco" autocomplete="street-address" placeholder="Informe sua localidade" required>
+                </label>
+                <label class="weather-alert-consent">
+                    <input type="checkbox" name="whatsapp" value="1" checked required>
+                    <span>Aceito receber alertas meteorológicos pelo WhatsApp e sei que posso cancelar a qualquer momento.</span>
+                </label>
+                <div class="weather-alert-actions">
+                    <button class="weather-alert-cancel" type="button" data-close-weather-alerts>Cancelar</button>
+                    <button class="weather-alert-submit" type="submit">Cadastrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <footer class="site-footer" id="rodape">
         <div class="footer-grid">
             <div>

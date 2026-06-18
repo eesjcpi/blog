@@ -1585,6 +1585,59 @@ const forms = Array.from(document.querySelectorAll("[data-search-form]"));
 const posts = Array.from(document.querySelectorAll("[data-post]"));
 const groups = Array.from(document.querySelectorAll("[data-date-group]"));
 const emptyState = document.querySelector("[data-empty-state]");
+const weatherAlertModal = document.querySelector("[data-weather-alert-modal]");
+const weatherAlertOpeners = document.querySelectorAll("[data-open-weather-alerts]");
+const weatherAlertClosers = document.querySelectorAll("[data-close-weather-alerts]");
+const weatherPhone = document.querySelector("[data-weather-phone]");
+let weatherAlertTrigger = null;
+
+const openWeatherAlerts = (trigger) => {
+    if (!weatherAlertModal) return;
+    weatherAlertTrigger = trigger || null;
+    weatherAlertModal.hidden = false;
+    weatherAlertModal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("has-open-modal");
+    weatherAlertModal.querySelector("input")?.focus();
+};
+
+const closeWeatherAlerts = () => {
+    if (!weatherAlertModal) return;
+    weatherAlertModal.hidden = true;
+    weatherAlertModal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("has-open-modal");
+    weatherAlertTrigger?.focus();
+};
+
+weatherAlertOpeners.forEach((button) => {
+    button.addEventListener("click", () => openWeatherAlerts(button));
+});
+
+weatherAlertClosers.forEach((button) => {
+    button.addEventListener("click", closeWeatherAlerts);
+});
+
+weatherAlertModal?.addEventListener("click", (event) => {
+    if (event.target === weatherAlertModal) closeWeatherAlerts();
+});
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && weatherAlertModal && !weatherAlertModal.hidden) {
+        closeWeatherAlerts();
+    }
+});
+
+weatherPhone?.addEventListener("input", () => {
+    const digits = weatherPhone.value.replace(/\\D/g, "").slice(0, 11);
+    if (digits.length > 10) {
+        weatherPhone.value = digits.replace(/(\\d{2})(\\d{5})(\\d{0,4})/, "($1) $2-$3");
+    } else if (digits.length > 6) {
+        weatherPhone.value = digits.replace(/(\\d{2})(\\d{4})(\\d{0,4})/, "($1) $2-$3");
+    } else if (digits.length > 2) {
+        weatherPhone.value = digits.replace(/(\\d{2})(\\d+)/, "($1) $2");
+    } else {
+        weatherPhone.value = digits;
+    }
+});
 
 const normalize = (value) =>
     value
@@ -3457,7 +3510,8 @@ def institutional_nav_html(prefix: str = "", active: str = "home") -> str:
         <a href="{prefix}index.html#galeria">Galeria</a>
         <a href="{prefix}index.html#instagram">Instagram</a>
         <a href="{prefix}index.html#vestibular">Vestibular</a>
-        <a href="https://meteo.eesjv.com.br/">Estação</a>
+        <a href="{prefix}posts/2022-10-05-estacao-meteorologica-ee-sao-jose.html">Estação meteorológica</a>
+        <button class="nav-alert-button" type="button" data-open-weather-alerts>Receber alertas de tempestades</button>
         <a href="{prefix}index.html#contato">Contato</a>
     </nav>
     """
@@ -3472,7 +3526,6 @@ def portal_header_html(blog_title: str, prefix: str = "", active: str = "home") 
     <header class="site-header">
         <div class="top-strip">
             <span>Escola Estadual São José</span>
-            <a href="https://meteo.eesjv.com.br/">Estação meteorológica</a>
         </div>
         <div class="brand-row">
             <a class="school-brand" href="{prefix}index.html#inicio" aria-label="Página inicial">
@@ -3495,6 +3548,28 @@ def portal_header_html(blog_title: str, prefix: str = "", active: str = "home") 
 
 def portal_footer_html(prefix: str = "") -> str:
     return f"""
+    <div class="weather-alert-modal" data-weather-alert-modal hidden aria-hidden="true">
+        <div class="weather-alert-dialog" role="dialog" aria-modal="true" aria-labelledby="weather-alert-title">
+            <button class="weather-alert-close" type="button" data-close-weather-alerts aria-label="Fechar cadastro">×</button>
+            <span class="weather-alert-eyebrow">Alertas pelo WhatsApp</span>
+            <h2 id="weather-alert-title">Receber alertas de tempestades</h2>
+            <p>Cadastre-se para receber avisos meteorológicos enviados pela estação da EE São José.</p>
+            <form class="weather-alert-form" method="POST" action="https://meteo.eesjv.com.br/">
+                <label><span>Nome</span><input type="text" name="nome" autocomplete="name" placeholder="Seu nome" required></label>
+                <label><span>WhatsApp</span><input type="tel" name="telefone" data-weather-phone autocomplete="tel" placeholder="(67) 99999-9999" required></label>
+                <label><span>Endereço, fazenda ou bairro</span><input type="text" name="endereco" autocomplete="street-address" placeholder="Informe sua localidade" required></label>
+                <label class="weather-alert-consent">
+                    <input type="checkbox" name="whatsapp" value="1" checked required>
+                    <span>Aceito receber alertas meteorológicos pelo WhatsApp e sei que posso cancelar a qualquer momento.</span>
+                </label>
+                <div class="weather-alert-actions">
+                    <button class="weather-alert-cancel" type="button" data-close-weather-alerts>Cancelar</button>
+                    <button class="weather-alert-submit" type="submit">Cadastrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <footer class="site-footer" id="rodape">
         <div class="footer-grid">
             <div>
@@ -3929,8 +4004,9 @@ h3 {
 
 .top-strip {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     gap: 16px;
+    text-align: center;
     padding: 8px 0;
     color: var(--muted);
     font-size: 0.78rem;
@@ -4025,6 +4101,7 @@ h3 {
 
 .main-nav {
     display: flex;
+    justify-content: center;
     gap: 6px;
     align-items: center;
     border-top: 1px solid var(--line);
@@ -4032,7 +4109,8 @@ h3 {
     padding: 8px 0;
 }
 
-.main-nav a {
+.main-nav a,
+.nav-alert-button {
     border-radius: 8px;
     color: #55586f;
     flex: 0 0 auto;
@@ -4041,10 +4119,145 @@ h3 {
     padding: 10px 12px;
 }
 
+.nav-alert-button {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+}
+
 .main-nav a:hover,
+.nav-alert-button:hover,
+.nav-alert-button:focus-visible,
 .main-nav a[aria-current="page"] {
     background: var(--orange-soft);
     color: var(--brand);
+}
+
+.weather-alert-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    overflow-y: auto;
+    background: rgba(16, 6, 70, 0.72);
+    backdrop-filter: blur(7px);
+    padding: 20px;
+}
+
+.weather-alert-modal[hidden] {
+    display: none;
+}
+
+.weather-alert-dialog {
+    position: relative;
+    width: min(100%, 520px);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: 0 28px 80px rgba(16, 6, 70, 0.28);
+    padding: clamp(24px, 5vw, 38px);
+}
+
+.weather-alert-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--page);
+    color: var(--brand-dark);
+    cursor: pointer;
+    font-size: 1.6rem;
+}
+
+.weather-alert-eyebrow {
+    color: var(--orange);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.weather-alert-dialog h2 {
+    margin: 8px 42px 10px 0;
+    color: var(--brand-dark);
+    font-size: clamp(1.65rem, 4vw, 2.3rem);
+    line-height: 1.08;
+}
+
+.weather-alert-dialog > p {
+    color: var(--muted);
+    line-height: 1.55;
+}
+
+.weather-alert-form {
+    display: grid;
+    gap: 16px;
+    margin-top: 22px;
+}
+
+.weather-alert-form label:not(.weather-alert-consent) {
+    display: grid;
+    gap: 7px;
+    color: var(--brand-dark);
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.weather-alert-form input[type="text"],
+.weather-alert-form input[type="tel"] {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: #fff;
+    padding: 12px 13px;
+}
+
+.weather-alert-consent {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    align-items: start;
+    color: var(--muted);
+    font-size: 0.87rem;
+    line-height: 1.45;
+}
+
+.weather-alert-consent input {
+    margin-top: 3px;
+}
+
+.weather-alert-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.weather-alert-actions button {
+    min-height: 44px;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 900;
+    padding: 11px 16px;
+}
+
+.weather-alert-cancel {
+    background: var(--page);
+    color: var(--muted);
+}
+
+.weather-alert-submit {
+    background: #16803c;
+    color: #fff;
+}
+
+body.has-open-modal {
+    overflow: hidden;
 }
 
 .portal-main {
@@ -4868,12 +5081,18 @@ h3 {
     }
 
     .main-nav {
+        justify-content: flex-start;
         gap: 2px;
     }
 
-    .main-nav a {
+    .main-nav a,
+    .nav-alert-button {
         font-size: 0.84rem;
         padding: 9px 7px;
+    }
+
+    .weather-alert-actions {
+        display: grid;
     }
 
     .archive-news-item {

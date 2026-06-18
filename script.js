@@ -4,6 +4,11 @@ const posts = Array.from(document.querySelectorAll("[data-post]"));
 const groups = Array.from(document.querySelectorAll("[data-date-group]"));
 const emptyState = document.querySelector("[data-empty-state]");
 const siteHeader = document.querySelector(".site-header");
+const weatherAlertModal = document.querySelector("[data-weather-alert-modal]");
+const weatherAlertOpeners = document.querySelectorAll("[data-open-weather-alerts]");
+const weatherAlertClosers = document.querySelectorAll("[data-close-weather-alerts]");
+const weatherPhone = document.querySelector("[data-weather-phone]");
+let weatherAlertTrigger = null;
 
 const updateHeaderOffset = () => {
     if (!siteHeader) {
@@ -21,6 +26,62 @@ if (siteHeader && "ResizeObserver" in window) {
 } else {
     window.addEventListener("resize", updateHeaderOffset);
 }
+
+const openWeatherAlerts = (trigger) => {
+    if (!weatherAlertModal) {
+        return;
+    }
+
+    weatherAlertTrigger = trigger || null;
+    weatherAlertModal.hidden = false;
+    weatherAlertModal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("has-open-modal");
+    weatherAlertModal.querySelector("input")?.focus();
+};
+
+const closeWeatherAlerts = () => {
+    if (!weatherAlertModal) {
+        return;
+    }
+
+    weatherAlertModal.hidden = true;
+    weatherAlertModal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("has-open-modal");
+    weatherAlertTrigger?.focus();
+};
+
+weatherAlertOpeners.forEach((button) => {
+    button.addEventListener("click", () => openWeatherAlerts(button));
+});
+
+weatherAlertClosers.forEach((button) => {
+    button.addEventListener("click", closeWeatherAlerts);
+});
+
+weatherAlertModal?.addEventListener("click", (event) => {
+    if (event.target === weatherAlertModal) {
+        closeWeatherAlerts();
+    }
+});
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && weatherAlertModal && !weatherAlertModal.hidden) {
+        closeWeatherAlerts();
+    }
+});
+
+weatherPhone?.addEventListener("input", () => {
+    const digits = weatherPhone.value.replace(/\D/g, "").slice(0, 11);
+    if (digits.length > 10) {
+        weatherPhone.value = digits.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3");
+    } else if (digits.length > 6) {
+        weatherPhone.value = digits.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+    } else if (digits.length > 2) {
+        weatherPhone.value = digits.replace(/(\d{2})(\d+)/, "($1) $2");
+    } else {
+        weatherPhone.value = digits;
+    }
+});
 
 const normalize = (value) =>
     value
