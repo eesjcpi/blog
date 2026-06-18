@@ -6,9 +6,9 @@ backend:
   auth_endpoint: auth
 
 locale: pt
-site_url: https://eesjcpi.github.io/blog/
-display_url: https://eesjcpi.github.io/blog/
-logo_url: https://eesjcpi.github.io/blog/assets/img/logo_escola.png
+site_url: https://blog.eesjv.com.br/
+display_url: https://blog.eesjv.com.br/
+logo_url: https://blog.eesjv.com.br/assets/img/logo_escola.png
 
 media_folder: assets/uploads
 public_folder: /assets/uploads

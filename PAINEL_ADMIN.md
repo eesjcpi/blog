@@ -2,7 +2,7 @@
 
 O painel fica em:
 
-`https://eesjcpi.github.io/blog/admin/`
+`https://blog.eesjv.com.br/admin/`
 
 Ele utiliza o Decap CMS para criar arquivos JSON em `content/postagens`.
 Quando uma postagem é salva, o GitHub Actions monta novamente o site e publica
@@ -28,7 +28,7 @@ O Wrangler exibirá uma URL semelhante a:
 
 Na OAuth App criada no GitHub:
 
-- Homepage URL: `https://eesjcpi.github.io/blog/`
+   - Homepage URL: `https://blog.eesjv.com.br/`
 - Authorization callback URL:
   `https://URL-DO-WORKER.workers.dev/callback`
 

@@ -7,7 +7,7 @@ temporário da pessoa que fez login.
 
 1. Na OAuth App do GitHub, configure:
 
-   - Homepage URL: `https://eesjcpi.github.io/blog/`
+   - Homepage URL: `https://blog.eesjv.com.br/`
    - Authorization callback URL:
      `https://NOME-DO-WORKER.workers.dev/callback`
 
