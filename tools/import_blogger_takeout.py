@@ -2302,6 +2302,41 @@ def write_portal_post_pages(project_dir: Path, blog_title: str, posts: list[Post
         (posts_dir / f"{post.slug}.html").write_text(document, encoding="utf-8")
 
 
+def write_weather_station_page(project_dir: Path, blog_title: str) -> None:
+    body = """
+    <main class="portal-main weather-station-page">
+        <header class="weather-station-heading">
+            <span>Dados em tempo real</span>
+            <h1>Estação Meteorológica</h1>
+            <p>Painel original da estação da EE São José, preservado a partir do blog antigo da escola.</p>
+        </header>
+
+        <section class="legacy-weather-shell" aria-label="Painel da estação meteorológica Ambient Weather">
+            <iframe
+                class="legacy-weather-frame"
+                src="https://ambientweather.net/devices/public/a535a0b6ff603c1d2376abc99e689f2f?embed=true"
+                title="Dados em tempo real da Estação Meteorológica da EE São José"
+                loading="eager"
+                allow="fullscreen"
+            ></iframe>
+        </section>
+
+        <div class="weather-station-actions">
+            <button class="primary-action" type="button" data-open-weather-alerts>Receber alertas de tempestades</button>
+            <a class="secondary-station-link" href="index.html">Voltar ao blog</a>
+        </div>
+    </main>
+    """
+    document = portal_shell(
+        blog_title=blog_title,
+        title=f"Estação Meteorológica | {blog_title}",
+        css_href="style.css",
+        script_href="script.js",
+        body_html=body,
+    )
+    (project_dir / "estacao-meteorologica.html").write_text(document, encoding="utf-8")
+
+
 def write_portal_assets(project_dir: Path) -> None:
     css = """:root {
     --page: #f7f8ff;
@@ -3510,7 +3545,7 @@ def institutional_nav_html(prefix: str = "", active: str = "home") -> str:
         <a href="{prefix}index.html#galeria">Galeria</a>
         <a href="{prefix}index.html#instagram">Instagram</a>
         <a href="{prefix}index.html#vestibular">Vestibular</a>
-        <a href="{prefix}posts/2022-10-05-estacao-meteorologica-ee-sao-jose.html">Estação meteorológica</a>
+        <a href="{prefix}estacao-meteorologica.html">Estação meteorológica</a>
         <button class="nav-alert-button" type="button" data-open-weather-alerts>Receber alertas de tempestades</button>
         <a href="{prefix}index.html#contato">Contato</a>
     </nav>
@@ -3592,7 +3627,7 @@ def portal_footer_html(prefix: str = "") -> str:
             <div>
                 <h2>Serviços</h2>
                 <a href="{prefix}index.html#vestibular">Inscrição de vestibular</a>
-                <a href="https://meteo.eesjv.com.br/">Estação meteorológica</a>
+                <a href="{prefix}estacao-meteorologica.html">Estação meteorológica</a>
                 <a href="{prefix}index.html#instagram">Instagram</a>
                 <a href="{prefix}admin/">Área administrativa</a>
             </div>
@@ -3800,7 +3835,7 @@ def contact_section_html() -> str:
             <article>
                 <span>Estação</span>
                 <strong>Monitoramento meteorológico</strong>
-                <a href="https://meteo.eesjv.com.br/">Abrir painel</a>
+                <a href="estacao-meteorologica.html">Abrir painel</a>
             </article>
         </div>
     </section>
@@ -4672,6 +4707,74 @@ body.has-open-modal {
     min-height: 100px;
 }
 
+.weather-station-page {
+    padding-top: 22px;
+}
+
+.weather-station-heading {
+    max-width: 920px;
+    margin: 0 auto 22px;
+    text-align: center;
+}
+
+.weather-station-heading span {
+    color: var(--orange);
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.weather-station-heading h1 {
+    margin: 8px 0 10px;
+    color: var(--brand-dark);
+    font-size: clamp(2rem, 5vw, 3.8rem);
+    line-height: 1.02;
+}
+
+.weather-station-heading p {
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.legacy-weather-shell {
+    width: min(100%, 1100px);
+    margin: 0 auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f7f6f1;
+    box-shadow: var(--shadow);
+}
+
+.legacy-weather-frame {
+    display: block;
+    width: 100%;
+    height: 1050px;
+    border: 0;
+    background: #fff;
+}
+
+.weather-station-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.weather-station-actions .secondary-station-link {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--brand);
+    font-weight: 900;
+    padding: 11px 16px;
+}
+
 .news-meta {
     display: flex;
     flex-wrap: wrap;
@@ -5095,6 +5198,10 @@ body.has-open-modal {
         display: grid;
     }
 
+    .legacy-weather-frame {
+        height: 900px;
+    }
+
     .archive-news-item {
         grid-template-columns: 1fr;
     }
@@ -5184,6 +5291,7 @@ def import_takeout(zip_path: Path, project_dir: Path) -> None:
     write_portal_assets(project_dir)
     write_portal_index(project_dir, blog_title, posts, events)
     write_portal_post_pages(project_dir, blog_title, posts)
+    write_weather_station_page(project_dir, blog_title)
 
     print(f"Blog: {blog_title}")
     print(f"Postagens importadas: {len(posts)}")
