@@ -1831,6 +1831,7 @@ def portal_shell(
     body_html: str,
     prefix: str = "",
     active: str = "home",
+    body_class: str = "",
 ) -> str:
     return f"""<!DOCTYPE html>
 <html lang="pt-BR">
@@ -1843,7 +1844,7 @@ def portal_shell(
     <script async defer src="https://www.instagram.com/embed.js"></script>
     <script src="{script_href}" defer></script>
 </head>
-<body>
+<body{f' class="{html.escape(body_class)}"' if body_class else ''}>
     {GENERATED}
     {portal_header_html(blog_title, prefix, active)}
     {body_html}
@@ -2305,26 +2306,97 @@ def write_portal_post_pages(project_dir: Path, blog_title: str, posts: list[Post
 def write_weather_station_page(project_dir: Path, blog_title: str) -> None:
     body = """
     <main class="portal-main weather-station-page">
-        <header class="weather-station-heading">
-            <span>Dados em tempo real</span>
-            <h1>Estação Meteorológica</h1>
-            <p>Painel original da estação da EE São José, preservado a partir do blog antigo da escola.</p>
-        </header>
-
-        <section class="legacy-weather-shell" aria-label="Painel da estação meteorológica Ambient Weather">
-            <iframe
-                class="legacy-weather-frame"
-                src="https://ambientweather.net/devices/public/a535a0b6ff603c1d2376abc99e689f2f?embed=true"
-                title="Dados em tempo real da Estação Meteorológica da EE São José"
-                loading="eager"
-                allow="fullscreen"
-            ></iframe>
+        <section class="weather-station-hero" aria-labelledby="weather-page-title">
+            <div class="weather-station-copy">
+                <div class="weather-live-badge">
+                    <span aria-hidden="true"></span>
+                    Monitoramento em tempo real
+                </div>
+                <p class="weather-station-kicker">Estação Meteorológica • Vicentina/MS</p>
+                <h1 id="weather-page-title">O clima da nossa comunidade, medido aqui na escola.</h1>
+                <p class="weather-station-intro">Acompanhe as condições meteorológicas registradas pela estação da EE São José e consulte informações atualizadas sobre chuva, vento, temperatura e muito mais.</p>
+                <div class="weather-station-actions">
+                    <a class="primary-action weather-panel-link" href="#painel-meteorologico">Ver dados agora</a>
+                    <button class="weather-alert-hero-button" type="button" data-open-weather-alerts>Receber alertas</button>
+                </div>
+                <dl class="weather-station-facts">
+                    <div><dt>Localização</dt><dd>EE São José</dd></div>
+                    <div><dt>Leituras</dt><dd>Automáticas</dd></div>
+                    <div><dt>Acesso</dt><dd>Aberto à comunidade</dd></div>
+                </dl>
+            </div>
+            <figure class="weather-station-photo">
+                <img src="assets/img/img-20220909-083336.jpg" alt="Sensores da estação meteorológica da EE São José ao entardecer">
+                <figcaption>
+                    <span>Estação da EE São José</span>
+                    <strong>Ciência e tecnologia a serviço da comunidade</strong>
+                </figcaption>
+            </figure>
         </section>
 
-        <div class="weather-station-actions">
-            <button class="primary-action" type="button" data-open-weather-alerts>Receber alertas de tempestades</button>
-            <a class="secondary-station-link" href="index.html">Voltar ao blog</a>
-        </div>
+        <section class="weather-sensor-grid" aria-label="Informações disponíveis na estação">
+            <article>
+                <span class="weather-sensor-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 14.76V5a2 2 0 0 0-4 0v9.76a4 4 0 1 0 4 0Z"/><path d="M12 9v8"/></svg></span>
+                <div><strong>Temperatura</strong><small>Condições térmicas locais</small></div>
+            </article>
+            <article>
+                <span class="weather-sensor-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3s6 6.1 6 11a6 6 0 0 1-12 0c0-4.9 6-11 6-11Z"/><path d="M9.5 15.5a3 3 0 0 0 4.5 1.8"/></svg></span>
+                <div><strong>Umidade</strong><small>Umidade relativa do ar</small></div>
+            </article>
+            <article>
+                <span class="weather-sensor-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h15a3 3 0 1 1-3 3"/><path d="M3 16h7"/></svg></span>
+                <div><strong>Vento</strong><small>Velocidade e direção</small></div>
+            </article>
+            <article>
+                <span class="weather-sensor-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 15a4 4 0 1 1 1.2-7.8A5.5 5.5 0 0 1 19 9a3 3 0 0 1-1 5.83"/><path d="m8 18-1 2"/><path d="m13 17-1 3"/><path d="m18 18-1 2"/></svg></span>
+                <div><strong>Chuva</strong><small>Volume de precipitação</small></div>
+            </article>
+        </section>
+
+        <section class="weather-dashboard-section" id="painel-meteorologico" aria-labelledby="weather-dashboard-title">
+            <header class="weather-dashboard-heading">
+                <div>
+                    <span>Painel oficial</span>
+                    <h2 id="weather-dashboard-title">Dados da estação em tempo real</h2>
+                    <p>Os valores abaixo são carregados diretamente do painel oficial da estação.</p>
+                </div>
+                <a href="https://meteo.eesjv.com.br/" target="_blank" rel="noopener">
+                    Abrir painel completo <span aria-hidden="true">↗</span>
+                </a>
+            </header>
+            <div class="legacy-weather-shell" data-weather-shell>
+                <div class="weather-frame-toolbar" aria-hidden="true">
+                    <span class="weather-frame-dots"><i></i><i></i><i></i></span>
+                    <strong>EE São José • Estação meteorológica</strong>
+                    <span class="weather-frame-status">Ao vivo</span>
+                </div>
+                <div class="weather-frame-container">
+                    <div class="weather-frame-loader" data-weather-loader role="status">
+                        <span></span>
+                        <strong>Carregando dados meteorológicos…</strong>
+                        <small>Isso pode levar alguns segundos.</small>
+                    </div>
+                    <iframe
+                        class="legacy-weather-frame"
+                        data-weather-frame
+                        src="https://meteo.eesjv.com.br/"
+                        title="Dados em tempo real da Estação Meteorológica da EE São José"
+                        loading="eager"
+                        allow="fullscreen"
+                    ></iframe>
+                </div>
+            </div>
+        </section>
+
+        <aside class="weather-alert-callout">
+            <div class="weather-alert-callout-icon" aria-hidden="true">!</div>
+            <div>
+                <span>Fique atento ao tempo</span>
+                <h2>Receba alertas de tempestades pelo WhatsApp</h2>
+                <p>Cadastre sua localidade para receber avisos meteorológicos importantes da região.</p>
+            </div>
+            <button type="button" data-open-weather-alerts>Quero receber alertas</button>
+        </aside>
     </main>
     """
     document = portal_shell(
@@ -2333,6 +2405,8 @@ def write_weather_station_page(project_dir: Path, blog_title: str) -> None:
         css_href="style.css",
         script_href="script.js",
         body_html=body,
+        active="weather",
+        body_class="weather-station-body",
     )
     (project_dir / "estacao-meteorologica.html").write_text(document, encoding="utf-8")
 
@@ -3536,6 +3610,7 @@ def institutional_hero_post(posts: list[Post]) -> Post:
 
 def institutional_nav_html(prefix: str = "", active: str = "home") -> str:
     current_home = ' aria-current="page"' if active == "home" else ""
+    current_weather = ' aria-current="page"' if active == "weather" else ""
     return f"""
     <nav class="main-nav" aria-label="Navegação principal">
         <a href="{prefix}index.html#inicio"{current_home}>Início</a>
@@ -3545,7 +3620,7 @@ def institutional_nav_html(prefix: str = "", active: str = "home") -> str:
         <a href="{prefix}index.html#galeria">Galeria</a>
         <a href="{prefix}index.html#instagram">Instagram</a>
         <a href="{prefix}index.html#vestibular">Vestibular</a>
-        <a href="{prefix}estacao-meteorologica.html">Estação meteorológica</a>
+        <a href="{prefix}estacao-meteorologica.html"{current_weather}>Estação meteorológica</a>
         <button class="nav-alert-button" type="button" data-open-weather-alerts>Receber alertas de tempestades</button>
         <a href="{prefix}index.html#contato">Contato</a>
     </nav>
@@ -5272,8 +5347,12 @@ window.addEventListener("load", () => {
     }
 });
 """
-    (project_dir / "style.css").write_text(css, encoding="utf-8")
-    (project_dir / "script.js").write_text(js, encoding="utf-8")
+    style_path = project_dir / "style.css"
+    script_path = project_dir / "script.js"
+    if not style_path.exists():
+        style_path.write_text(css, encoding="utf-8")
+    if not script_path.exists():
+        script_path.write_text(js, encoding="utf-8")
 
 
 def import_takeout(zip_path: Path, project_dir: Path) -> None:

@@ -8,6 +8,9 @@ const weatherAlertModal = document.querySelector("[data-weather-alert-modal]");
 const weatherAlertOpeners = document.querySelectorAll("[data-open-weather-alerts]");
 const weatherAlertClosers = document.querySelectorAll("[data-close-weather-alerts]");
 const weatherPhone = document.querySelector("[data-weather-phone]");
+const weatherFrame = document.querySelector("[data-weather-frame]");
+const weatherShell = document.querySelector("[data-weather-shell]");
+const navLinks = Array.from(document.querySelectorAll(".main-nav a"));
 let weatherAlertTrigger = null;
 
 const updateHeaderOffset = () => {
@@ -82,6 +85,105 @@ weatherPhone?.addEventListener("input", () => {
         weatherPhone.value = digits;
     }
 });
+
+weatherFrame?.addEventListener("load", () => {
+    weatherShell?.classList.add("is-loaded");
+});
+
+const setActiveNavLink = (activeLink) => {
+    navLinks.forEach((link) => {
+        const isActive = link === activeLink;
+        link.classList.toggle("is-nav-active", isActive);
+        if (isActive) {
+            link.setAttribute("aria-current", "page");
+        } else {
+            link.removeAttribute("aria-current");
+        }
+    });
+};
+
+const animateTargetSection = (target) => {
+    target.classList.remove("section-arriving");
+    void target.offsetWidth;
+    target.classList.add("section-arriving");
+    window.setTimeout(() => target.classList.remove("section-arriving"), 760);
+};
+
+const normalizePagePath = (pathname) => pathname.replace(/index\.html$/i, "");
+
+navLinks.forEach((link) => {
+    link.addEventListener("click", (event) => {
+        if (
+            event.defaultPrevented ||
+            event.button !== 0 ||
+            event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey
+        ) {
+            return;
+        }
+
+        const url = new URL(link.href, window.location.href);
+        const samePage =
+            url.origin === window.location.origin &&
+            normalizePagePath(url.pathname) === normalizePagePath(window.location.pathname);
+        const target = samePage && url.hash ? document.querySelector(url.hash) : null;
+
+        setActiveNavLink(link);
+
+        if (target) {
+            event.preventDefault();
+            history.pushState(null, "", url.hash);
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            window.setTimeout(() => animateTargetSection(target), 260);
+            return;
+        }
+
+        if (url.origin === window.location.origin && !url.href.startsWith("javascript:")) {
+            event.preventDefault();
+            document.body.classList.add("is-page-leaving");
+            window.setTimeout(() => {
+                window.location.href = url.href;
+            }, 210);
+        }
+    });
+});
+
+const observedSections = Array.from(document.querySelectorAll("main section[id]"));
+if ("IntersectionObserver" in window && observedSections.length) {
+    const sectionLinks = navLinks.filter((link) => {
+        const url = new URL(link.href, window.location.href);
+        return url.pathname.endsWith("index.html") && url.hash;
+    });
+
+    const sectionObserver = new IntersectionObserver(
+        (entries) => {
+            const visibleEntry = entries
+                .filter((entry) => entry.isIntersecting)
+                .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+            if (!visibleEntry) {
+                return;
+            }
+
+            const matchingLink = sectionLinks.find((link) => {
+                const url = new URL(link.href, window.location.href);
+                return url.hash === `#${visibleEntry.target.id}`;
+            });
+
+            if (matchingLink) {
+                setActiveNavLink(matchingLink);
+            }
+        },
+        {
+            rootMargin: `-${Math.round(window.innerHeight * 0.22)}px 0px -55% 0px`,
+            threshold: [0.08, 0.35, 0.65],
+        }
+    );
+
+    observedSections.forEach((section) => sectionObserver.observe(section));
+}
 
 const normalize = (value) =>
     value
