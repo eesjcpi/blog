@@ -16,6 +16,8 @@ const navLinks = Array.from(document.querySelectorAll(".main-nav a"));
 const archiveMonths = Array.from(document.querySelectorAll(".archive-month"));
 let weatherAlertTrigger = null;
 let weatherLoadTimer = null;
+let navRestoreTimer = null;
+let navScrollEndHandler = null;
 
 const setArchiveMonthExpanded = (month, expanded, animate = true) => {
     const button = month.querySelector(".archive-month-toggle");
@@ -350,6 +352,26 @@ const setActiveNavLink = (activeLink) => {
     });
 };
 
+const restoreActiveNavAfterScroll = (activeLink) => {
+    if (navScrollEndHandler) {
+        window.removeEventListener("scrollend", navScrollEndHandler);
+    }
+    window.clearTimeout(navRestoreTimer);
+
+    const restore = () => {
+        window.clearTimeout(navRestoreTimer);
+        window.removeEventListener("scrollend", restore);
+        if (navScrollEndHandler === restore) {
+            navScrollEndHandler = null;
+        }
+        setActiveNavLink(activeLink);
+    };
+
+    navScrollEndHandler = restore;
+    window.addEventListener("scrollend", restore, { once: true });
+    navRestoreTimer = window.setTimeout(restore, 2000);
+};
+
 const animateTargetSection = (target) => {
     target.classList.remove("section-arriving");
     void target.offsetWidth;
@@ -407,6 +429,7 @@ navLinks.forEach((link) => {
             history.pushState(null, "", url.hash);
             target.scrollIntoView({ behavior: "smooth", block: "start" });
             window.setTimeout(() => animateTargetSection(target), 260);
+            restoreActiveNavAfterScroll(link);
             return;
         }
 
@@ -429,6 +452,10 @@ if ("IntersectionObserver" in window && observedSections.length) {
 
     const sectionObserver = new IntersectionObserver(
         (entries) => {
+            if (navScrollEndHandler) {
+                return;
+            }
+
             const visibleEntry = entries
                 .filter((entry) => entry.isIntersecting)
                 .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
