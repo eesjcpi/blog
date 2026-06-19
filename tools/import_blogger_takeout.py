@@ -1701,7 +1701,6 @@ body.has-open-modal {
 .about-grid article,
 .contact-grid article,
 .admission-card,
-.events-home-panel,
 .instagram-post-card,
 .project-card,
 .archive-chip,
@@ -2236,7 +2235,6 @@ body.has-open-modal {
     padding: 18px;
 }
 
-.headline-list,
 .related-list {
     display: grid;
     gap: 10px;

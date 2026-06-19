@@ -641,7 +641,6 @@ section[id] {
 .about-grid article,
 .contact-grid article,
 .admission-card,
-.events-home-panel,
 .instagram-post-card,
 .project-card,
 .archive-chip,
@@ -1880,7 +1879,6 @@ section[id] {
     padding: 18px;
 }
 
-.headline-list,
 .related-list {
     display: grid;
     gap: 10px;
