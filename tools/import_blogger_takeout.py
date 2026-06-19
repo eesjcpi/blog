@@ -704,8 +704,8 @@ def write_index(project_dir: Path, blog_title: str, posts: list[Post], events: l
     document = professional_shell(
         blog_title=blog_title,
         title=f"{blog_title} | Blog institucional",
-        css_href="style.css",
-        script_href="script.js",
+        css_href="style-20260619.css",
+        script_href="script-20260619.js",
         body_html=body,
     )
     (project_dir / "index.html").write_text(document, encoding="utf-8")
@@ -748,8 +748,8 @@ def write_post_pages(project_dir: Path, blog_title: str, posts: list[Post]) -> N
         document = professional_shell(
             blog_title=blog_title,
             title=f"{post.title} | {blog_title}",
-            css_href="../style.css",
-            script_href="../script.js",
+            css_href="../style-20260619.css",
+            script_href="../script-20260619.js",
             body_html=body,
             prefix="../",
             active="posts",
@@ -1687,8 +1687,8 @@ forms.forEach((form) => {
     });
 });
 """
-    (project_dir / "style.css").write_text(css, encoding="utf-8")
-    (project_dir / "script.js").write_text(js, encoding="utf-8")
+    (project_dir / "style-20260619.css").write_text(css, encoding="utf-8")
+    (project_dir / "script-20260619.js").write_text(js, encoding="utf-8")
 
 
 def portal_tags_html(labels: list[str]) -> str:
@@ -2236,8 +2236,8 @@ def write_portal_index(project_dir: Path, blog_title: str, posts: list[Post], ev
     document = portal_shell(
         blog_title=blog_title,
         title=f"{blog_title} | Portal de notícias",
-        css_href="style.css",
-        script_href="script.js",
+        css_href="style-20260619.css",
+        script_href="script-20260619.js",
         body_html=body,
     )
     (project_dir / "index.html").write_text(document, encoding="utf-8")
@@ -2294,8 +2294,8 @@ def write_portal_post_pages(project_dir: Path, blog_title: str, posts: list[Post
         document = portal_shell(
             blog_title=blog_title,
             title=f"{title} | {blog_title}",
-            css_href="../style.css",
-            script_href="../script.js",
+            css_href="../style-20260619.css",
+            script_href="../script-20260619.js",
             body_html=body,
             prefix="../",
             active="posts",
@@ -2417,8 +2417,8 @@ def write_weather_station_page(project_dir: Path, blog_title: str) -> None:
     document = portal_shell(
         blog_title=blog_title,
         title=f"Estação Meteorológica | {blog_title}",
-        css_href="style.css",
-        script_href="script.js",
+        css_href="style-20260619.css",
+        script_href="script-20260619.js",
         body_html=body,
         active="weather",
         body_class="weather-station-body",
@@ -3582,8 +3582,8 @@ window.addEventListener("load", () => {
     }
 });
 """
-    (project_dir / "style.css").write_text(css, encoding="utf-8")
-    (project_dir / "script.js").write_text(js, encoding="utf-8")
+    (project_dir / "style-20260619.css").write_text(css, encoding="utf-8")
+    (project_dir / "script-20260619.js").write_text(js, encoding="utf-8")
 
 
 def institutional_post_title(post: Post) -> str:
@@ -3965,8 +3965,8 @@ def write_portal_index(project_dir: Path, blog_title: str, posts: list[Post], ev
     document = portal_shell(
         blog_title=blog_title,
         title=f"{blog_title} | Site institucional",
-        css_href="style.css",
-        script_href="script.js",
+        css_href="style-20260619.css",
+        script_href="script-20260619.js",
         body_html=body,
     )
     (project_dir / "index.html").write_text(document, encoding="utf-8")
@@ -4023,8 +4023,8 @@ def write_portal_post_pages(project_dir: Path, blog_title: str, posts: list[Post
         document = portal_shell(
             blog_title=blog_title,
             title=f"{title} | {blog_title}",
-            css_href="../style.css",
-            script_href="../script.js",
+            css_href="../style-20260619.css",
+            script_href="../script-20260619.js",
             body_html=body,
             prefix="../",
             active="posts",
@@ -5366,8 +5366,8 @@ window.addEventListener("load", () => {
     }
 });
 """
-    style_path = project_dir / "style.css"
-    script_path = project_dir / "script.js"
+    style_path = project_dir / "style-20260619.css"
+    script_path = project_dir / "script-20260619.js"
     if not style_path.exists():
         style_path.write_text(css, encoding="utf-8")
     if not script_path.exists():
