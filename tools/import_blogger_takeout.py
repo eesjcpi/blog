@@ -2154,7 +2154,7 @@ def portal_admission_html() -> str:
         for title, url, summary in links
     )
     return f"""
-    <section class="portal-section admission-section" id="inscricoes" aria-label="Inscrição de vestibular">
+    <section class="content-section admission-section" id="inscricoes" aria-label="Inscrição de vestibular">
         <div class="section-heading">
             <span>Orientação ao estudante</span>
             <h2>Inscrição de vestibular</h2>
@@ -2365,16 +2365,28 @@ def write_weather_station_page(project_dir: Path, blog_title: str) -> None:
                 </a>
             </header>
             <div class="legacy-weather-shell" data-weather-shell>
-                <div class="weather-frame-toolbar" aria-hidden="true">
-                    <span class="weather-frame-dots"><i></i><i></i><i></i></span>
+                <div class="weather-frame-toolbar">
+                    <span class="weather-frame-dots" aria-hidden="true"><i></i><i></i><i></i></span>
                     <strong>EE São José • Estação meteorológica</strong>
-                    <span class="weather-frame-status">Ao vivo</span>
+                    <span class="weather-frame-toolbar-actions">
+                        <span class="weather-frame-status">Ao vivo</span>
+                        <a href="https://meteo.eesjv.com.br/" target="_blank" rel="noopener">Abrir ↗</a>
+                    </span>
                 </div>
                 <div class="weather-frame-container">
                     <div class="weather-frame-loader" data-weather-loader role="status">
                         <span></span>
                         <strong>Carregando dados meteorológicos…</strong>
                         <small>Isso pode levar alguns segundos.</small>
+                    </div>
+                    <div class="weather-frame-fallback" data-weather-fallback hidden>
+                        <span class="weather-frame-fallback-icon" aria-hidden="true">☁</span>
+                        <strong>O painel está demorando para responder</strong>
+                        <p>Isso pode acontecer por bloqueio de conteúdo externo, conexão instável ou cache do navegador.</p>
+                        <div>
+                            <button type="button" data-reload-weather>Carregar novamente</button>
+                            <a href="https://meteo.eesjv.com.br/" target="_blank" rel="noopener">Abrir painel oficial</a>
+                        </div>
                     </div>
                     <iframe
                         class="legacy-weather-frame"
@@ -2384,6 +2396,9 @@ def write_weather_station_page(project_dir: Path, blog_title: str) -> None:
                         loading="eager"
                         allow="fullscreen"
                     ></iframe>
+                    <noscript>
+                        <p class="weather-frame-noscript">Ative o JavaScript ou <a href="https://meteo.eesjv.com.br/">abra o painel meteorológico diretamente</a>.</p>
+                    </noscript>
                 </div>
             </div>
         </section>
@@ -3609,7 +3624,7 @@ def institutional_hero_post(posts: list[Post]) -> Post:
 
 
 def institutional_nav_html(prefix: str = "", active: str = "home") -> str:
-    current_home = ' aria-current="page"' if active == "home" else ""
+    current_home = ""
     current_weather = ' aria-current="page"' if active == "weather" else ""
     return f"""
     <nav class="main-nav" aria-label="Navegação principal">
@@ -3635,16 +3650,11 @@ def portal_header_html(blog_title: str, prefix: str = "", active: str = "home") 
     return f"""
     <header class="site-header">
         <div class="top-strip">
-            <span>Escola Estadual São José</span>
+            <a class="top-school-crest" href="{prefix}index.html#inicio" aria-label="Escola Estadual São José — página inicial">
+                <img src="{prefix}assets/img/logo_escola.png" alt="Brasão da Escola Estadual São José">
+            </a>
         </div>
         <div class="brand-row">
-            <a class="school-brand" href="{prefix}index.html#inicio" aria-label="Página inicial">
-                <img class="brand-logo" src="{prefix}assets/img/logo_escola.png" alt="Logo da Escola Estadual São José">
-                <span>
-                    <strong>{html.escape(blog_title)}</strong>
-                    <small>Educação, comunidade e futuro</small>
-                </span>
-            </a>
             <form class="portal-search" data-search-form>
                 <label class="visually-hidden" for="{prefix.replace('.', '').replace('/', '')}portal-search">Pesquisar no acervo</label>
                 <input id="{prefix.replace('.', '').replace('/', '')}portal-search" data-search type="search" autocomplete="off" placeholder="Pesquisar no acervo">
@@ -3897,10 +3907,19 @@ def contact_section_html() -> str:
             <p>Procure a escola para orientações sobre matrícula, rotina escolar, projetos e atendimento à comunidade.</p>
         </div>
         <div class="contact-grid">
-            <article>
+            <article class="contact-map-card">
                 <span>Localidade</span>
                 <strong>Distrito de São José</strong>
                 <small>Vicentina/MS</small>
+                <div class="school-map">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d7728649.373575364!2d-58.198185!3d-18.9422543!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9489697c892539d3%3A0x23a89196b8475996!2sEscola%20Estadual%20S%C3%A3o%20Jos%C3%A9!5e0!3m2!1spt-BR!2sbr!4v1781896192979!5m2!1spt-BR!2sbr"
+                        title="Localização da Escola Estadual São José no Google Maps"
+                        loading="lazy"
+                        allowfullscreen
+                        referrerpolicy="no-referrer-when-downgrade"
+                    ></iframe>
+                </div>
             </article>
             <article>
                 <span>Instagram</span>

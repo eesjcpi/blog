@@ -14,16 +14,11 @@
     
     <header class="site-header">
         <div class="top-strip">
-            <span>Escola Estadual São José</span>
+            <a class="top-school-crest" href="index.html#inicio" aria-label="Escola Estadual São José — página inicial">
+                <img src="assets/img/logo_escola.png" alt="Brasão da Escola Estadual São José">
+            </a>
         </div>
         <div class="brand-row">
-            <a class="school-brand" href="index.html#inicio" aria-label="Página inicial">
-                <img class="brand-logo" src="assets/img/logo_escola.png" alt="Logo da Escola Estadual São José">
-                <span>
-                    <strong>EE São José</strong>
-                    <small>Educação, comunidade e futuro</small>
-                </span>
-            </a>
             <form class="portal-search" data-search-form>
                 <label class="visually-hidden" for="portal-search">Pesquisar no acervo</label>
                 <input id="portal-search" data-search type="search" autocomplete="off" placeholder="Pesquisar no acervo">
@@ -127,16 +122,28 @@
             </header>
 
             <div class="legacy-weather-shell" data-weather-shell>
-                <div class="weather-frame-toolbar" aria-hidden="true">
-                    <span class="weather-frame-dots"><i></i><i></i><i></i></span>
+                <div class="weather-frame-toolbar">
+                    <span class="weather-frame-dots" aria-hidden="true"><i></i><i></i><i></i></span>
                     <strong>EE São José • Estação meteorológica</strong>
-                    <span class="weather-frame-status">Ao vivo</span>
+                    <span class="weather-frame-toolbar-actions">
+                        <span class="weather-frame-status">Ao vivo</span>
+                        <a href="https://meteo.eesjv.com.br/" target="_blank" rel="noopener">Abrir ↗</a>
+                    </span>
                 </div>
                 <div class="weather-frame-container">
                     <div class="weather-frame-loader" data-weather-loader role="status">
                         <span></span>
                         <strong>Carregando dados meteorológicos…</strong>
                         <small>Isso pode levar alguns segundos.</small>
+                    </div>
+                    <div class="weather-frame-fallback" data-weather-fallback hidden>
+                        <span class="weather-frame-fallback-icon" aria-hidden="true">☁</span>
+                        <strong>O painel está demorando para responder</strong>
+                        <p>Isso pode acontecer por bloqueio de conteúdo externo, conexão instável ou cache do navegador.</p>
+                        <div>
+                            <button type="button" data-reload-weather>Carregar novamente</button>
+                            <a href="https://meteo.eesjv.com.br/" target="_blank" rel="noopener">Abrir painel oficial</a>
+                        </div>
                     </div>
                     <iframe
                         class="legacy-weather-frame"
@@ -146,6 +153,9 @@
                         loading="eager"
                         allow="fullscreen"
                     ></iframe>
+                    <noscript>
+                        <p class="weather-frame-noscript">Ative o JavaScript ou <a href="https://meteo.eesjv.com.br/">abra o painel meteorológico diretamente</a>.</p>
+                    </noscript>
                 </div>
             </div>
         </section>
