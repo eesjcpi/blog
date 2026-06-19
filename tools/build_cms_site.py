@@ -292,9 +292,9 @@ def write_entry_page(output: Path, entry: Entry) -> None:
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{title} | EE São José</title>
-    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="../../style-20260619.css">
     <script async defer src="https://www.instagram.com/embed.js"></script>
-    <script src="../../script.js" defer></script>
+    <script src="../../script-20260619.js" defer></script>
 </head>
 <body>
     <header class="site-header cms-page-header">
