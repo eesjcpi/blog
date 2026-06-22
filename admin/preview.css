@@ -95,7 +95,8 @@ body {
 }
 
 .preview-project-card,
-.preview-instagram-card {
+.preview-instagram-card,
+.preview-travel-card {
     max-width: 520px;
     overflow: hidden;
 }
@@ -104,6 +105,38 @@ body {
     aspect-ratio: 4 / 3;
     overflow: hidden;
     background: var(--surface-soft);
+}
+
+.preview-travel-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.preview-travel-cover {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--surface-soft);
+}
+
+.preview-travel-cover > span {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    border-radius: 999px;
+    background: rgba(16, 6, 70, 0.86);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 900;
+    padding: 7px 10px;
+}
+
+.preview-travel-card small {
+    color: var(--orange);
+    font-weight: 900;
+    text-transform: uppercase;
 }
 
 .preview-cover {

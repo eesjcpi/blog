@@ -11,9 +11,47 @@
             background: #f7f8ff;
             font-family: Arial, Helvetica, sans-serif;
         }
+
+        .admin-help {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            z-index: 9999;
+            max-width: 290px;
+            border: 1px solid #dddaf3;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 12px 30px rgba(22, 7, 83, 0.14);
+            color: #24115f;
+            font-size: 13px;
+            line-height: 1.45;
+            padding: 12px 14px;
+        }
+
+        .admin-help strong,
+        .admin-help span {
+            display: block;
+        }
+
+        .admin-help span {
+            margin-top: 4px;
+            color: #625c78;
+        }
+
+        .admin-help a {
+            display: inline-block;
+            margin-top: 7px;
+            color: #2410bb;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
+    <aside class="admin-help">
+        <strong>Para publicar, entre com a conta GitHub autorizada.</strong>
+        <span>Use a conta <b>rodrigoraa</b>. Depois de salvar, aguarde alguns minutos para a publicação aparecer.</span>
+        <a href="https://github.com/settings/applications" target="_blank" rel="noopener">Revisar autorização do GitHub</a>
+    </aside>
     <script src="https://unpkg.com/decap-cms@3.8.3/dist/decap-cms.js"></script>
     <script src="preview.js"></script>
 </body>

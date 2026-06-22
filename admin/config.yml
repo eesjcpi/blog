@@ -96,3 +96,64 @@ collections:
         widget: boolean
         default: false
         required: false
+
+  - name: viagens
+    label: Álbuns de viagens
+    label_singular: Álbum de viagem
+    folder: content/viagens
+    create: true
+    delete: true
+    extension: json
+    format: json
+    identifier_field: titulo
+    summary: "{{data}} — {{titulo}}"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    sortable_fields: [data, titulo, destino]
+    fields:
+      - label: Nome da viagem
+        name: titulo
+        widget: string
+        hint: "Exemplo: Viagem do Conhecimento ao Bioparque Pantanal"
+
+      - label: Data
+        name: data
+        widget: datetime
+        date_format: "DD/MM/YYYY"
+        time_format: false
+        format: "YYYY-MM-DD"
+
+      - label: Destino
+        name: destino
+        widget: string
+        hint: Cidade, instituição ou local visitado.
+
+      - label: Descrição
+        name: resumo
+        widget: text
+        hint: Breve relato sobre a viagem e seus objetivos pedagógicos.
+
+      - label: Foto de capa
+        name: capa
+        widget: image
+        required: false
+        hint: Se não escolher, a primeira foto do álbum será usada como capa.
+
+      - label: Fotos do álbum
+        name: fotos
+        widget: list
+        label_singular: Foto
+        summary: "{{fields.legenda}}"
+        min: 1
+        fields:
+          - label: Imagem
+            name: imagem
+            widget: image
+          - label: Legenda
+            name: legenda
+            widget: string
+            required: false
+
+      - label: Publicado
+        name: publicado
+        widget: boolean
+        default: true

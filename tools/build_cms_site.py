@@ -46,6 +46,31 @@ class Entry:
         return f"posts/cms/{self.slug}.html"
 
 
+@dataclass
+class TravelPhoto:
+    image: str
+    caption: str
+
+
+@dataclass
+class TravelAlbum:
+    title: str
+    destination: str
+    date: datetime
+    summary: str
+    cover: str
+    photos: list[TravelPhoto]
+    slug: str
+
+    @property
+    def date_label(self) -> str:
+        return self.date.strftime("%d/%m/%Y")
+
+    @property
+    def page_path(self) -> str:
+        return f"viagens/{self.slug}.html"
+
+
 def slugify(value: str) -> str:
     normalized = unicodedata.normalize("NFKD", value)
     ascii_value = normalized.encode("ascii", "ignore").decode("ascii")
@@ -124,6 +149,55 @@ def load_entries(source: Path) -> list[Entry]:
         )
 
     return sorted(entries, key=lambda item: (item.featured, item.date), reverse=True)
+
+
+def load_travel_albums(source: Path) -> list[TravelAlbum]:
+    folder = source / "content" / "viagens"
+    albums: list[TravelAlbum] = []
+
+    if not folder.exists():
+        return albums
+
+    for path in sorted(folder.glob("*.json")):
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        if raw.get("publicado", True) is False:
+            continue
+
+        title = str(raw.get("titulo") or "").strip()
+        if not title:
+            continue
+
+        photos: list[TravelPhoto] = []
+        for item in raw.get("fotos") or []:
+            if isinstance(item, str):
+                image = clean_image(item)
+                caption = ""
+            elif isinstance(item, dict):
+                image = clean_image(item.get("imagem"))
+                caption = str(item.get("legenda") or "").strip()
+            else:
+                continue
+            if image:
+                photos.append(TravelPhoto(image=image, caption=caption))
+
+        date = parse_date(raw.get("data"))
+        cover = clean_image(raw.get("capa"))
+        if not cover and photos:
+            cover = photos[0].image
+        base_slug = path.stem if path.stem else f"{date:%Y-%m-%d}-{slugify(title)}"
+        albums.append(
+            TravelAlbum(
+                title=title,
+                destination=str(raw.get("destino") or "").strip(),
+                date=date,
+                summary=str(raw.get("resumo") or "").strip(),
+                cover=cover,
+                photos=photos,
+                slug=slugify(base_slug),
+            )
+        )
+
+    return sorted(albums, key=lambda album: album.date, reverse=True)
 
 
 def copy_static_site(source: Path, output: Path) -> None:
@@ -276,6 +350,109 @@ def local_media_for_page(entry: Entry) -> str:
     return media_html(entry, "../../")
 
 
+def prefixed_image(image: str, prefix: str = "") -> str:
+    if not image:
+        return ""
+    return image if urlparse(image).scheme else f"{prefix}{image}"
+
+
+def travel_album_card_html(album: TravelAlbum) -> str:
+    title = html.escape(album.title)
+    destination = html.escape(album.destination or "Viagem do conhecimento")
+    summary = html.escape(album.summary)
+    href = html.escape(album.page_path, quote=True)
+    count = len(album.photos)
+    photo_label = f"{count} foto" if count == 1 else f"{count} fotos"
+
+    if album.cover:
+        cover = (
+            f'<img src="{html.escape(prefixed_image(album.cover), quote=True)}" '
+            f'alt="{title}" loading="lazy">'
+        )
+    else:
+        cover = '<div class="portal-media-fallback"><span>EE</span><strong>Viagem</strong></div>'
+
+    return (
+        f'<article class="travel-album-card">'
+        f'<a class="travel-album-cover" href="{href}">{cover}'
+        f'<span class="travel-photo-count">{photo_label}</span></a>'
+        f'<div class="travel-album-body"><span>{destination} • {album.date_label}</span>'
+        f'<h3><a href="{href}">{title}</a></h3><p>{summary}</p></div></article>'
+    )
+
+
+def write_travel_album_page(output: Path, album: TravelAlbum) -> None:
+    title = html.escape(album.title)
+    destination = html.escape(album.destination or "Viagem do conhecimento")
+    summary = html.escape(album.summary)
+
+    if album.cover:
+        cover = (
+            f'<img src="{html.escape(prefixed_image(album.cover, "../"), quote=True)}" '
+            f'alt="{title}">'
+        )
+    else:
+        cover = '<div class="portal-media-fallback"><span>EE</span><strong>Viagem</strong></div>'
+
+    figures: list[str] = []
+    for index, photo in enumerate(album.photos, start=1):
+        src = html.escape(prefixed_image(photo.image, "../"), quote=True)
+        caption = html.escape(photo.caption)
+        alt = caption or f"{album.title} — foto {index}"
+        figcaption = f"<figcaption>{caption}</figcaption>" if caption else ""
+        figures.append(
+            f'<figure><a href="{src}" target="_blank" rel="noopener">'
+            f'<img src="{src}" alt="{html.escape(alt, quote=True)}" loading="lazy"></a>'
+            f"{figcaption}</figure>"
+        )
+
+    gallery = "\n".join(figures)
+    if not gallery:
+        gallery = (
+            '<div class="travel-empty"><strong>Álbum sem fotos no momento</strong>'
+            "<p>As imagens desta viagem serão adicionadas em breve.</p></div>"
+        )
+
+    document = f"""<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{title} | Viagens do conhecimento</title>
+    <link rel="stylesheet" href="/assets/css/style-20260619.css">
+    <script src="/assets/js/script-20260619.js" defer></script>
+</head>
+<body>
+    <header class="site-header cms-page-header">
+        <div class="brand-row">
+            <a class="school-brand" href="/#viagens">
+                <img class="brand-logo" src="../assets/img/logo_escola.png" alt="EE São José">
+                <span><strong>EE São José</strong><small>Voltar às viagens</small></span>
+            </a>
+        </div>
+    </header>
+    <main class="portal-main travel-album-page">
+        <section class="travel-album-hero">
+            <div class="travel-album-hero-copy">
+                <span>{destination} • {album.date_label}</span>
+                <h1>{title}</h1>
+                <p>{summary}</p>
+                <a class="text-link" href="/#viagens">← Voltar aos álbuns</a>
+            </div>
+            {cover}
+        </section>
+        <section class="travel-photo-grid" aria-label="Fotos do álbum">
+            {gallery}
+        </section>
+    </main>
+</body>
+</html>"""
+
+    target = output / album.page_path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(document, encoding="utf-8")
+
+
 def write_entry_page(output: Path, entry: Entry) -> None:
     title = html.escape(entry.title)
     summary = html.escape(entry.summary)
@@ -292,9 +469,9 @@ def write_entry_page(output: Path, entry: Entry) -> None:
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{title} | EE São José</title>
-    <link rel="stylesheet" href="../../style-20260619.css">
+    <link rel="stylesheet" href="/assets/css/style-20260619.css">
     <script async defer src="https://www.instagram.com/embed.js"></script>
-    <script src="../../script-20260619.js" defer></script>
+    <script src="/assets/js/script-20260619.js" defer></script>
 </head>
 <body>
     <header class="site-header cms-page-header">
@@ -326,6 +503,7 @@ def write_entry_page(output: Path, entry: Entry) -> None:
 
 def build(source: Path, output: Path) -> None:
     entries = load_entries(source)
+    travel_albums = load_travel_albums(source)
     copy_static_site(source, output)
 
     index_path = output / "index.html"
@@ -355,12 +533,30 @@ def build(source: Path, output: Path) -> None:
                 f'<!-- cms:{category}:start -->\n{cards}\n<!-- cms:{category}:end -->',
             )
 
+    travel_cards = "\n".join(travel_album_card_html(album) for album in travel_albums)
+    if travel_cards:
+        index_html = re.sub(
+            r'\s*<div class="travel-empty">.*?</div>',
+            "",
+            index_html,
+            count=1,
+            flags=re.DOTALL,
+        )
+        index_html = insert_after_opening(
+            index_html,
+            '<div class="travel-album-grid">',
+            f"<!-- cms:viagens:start -->\n{travel_cards}\n<!-- cms:viagens:end -->",
+        )
+
     index_path.write_text(index_html, encoding="utf-8")
     for entry in entries:
         write_entry_page(output, entry)
+    for album in travel_albums:
+        write_travel_album_page(output, album)
 
     print(f"Site montado em {output}")
     print(f"Postagens publicadas pelo painel: {len(entries)}")
+    print(f"Álbuns de viagens publicados: {len(travel_albums)}")
 
 
 def main() -> None:

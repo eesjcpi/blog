@@ -21,8 +21,8 @@
         return new Intl.DateTimeFormat("pt-BR").format(date);
     }
 
-    function imagePreview(props, title, className) {
-        var image = field(props.entry, "imagem", "");
+    function imagePreview(props, title, className, fieldName) {
+        var image = field(props.entry, fieldName || "imagem", "");
         if (!image) {
             return h(
                 "div",
@@ -156,4 +156,46 @@
     });
 
     CMS.registerPreviewTemplate("postagens", PostPreview);
+
+    var TravelPreview = createClass({
+        render: function () {
+            var title = field(this.props.entry, "titulo", "Nome da viagem");
+            var destination = field(this.props.entry, "destino", "Destino da viagem");
+            var summary = field(this.props.entry, "resumo", "A descrição da viagem aparecerá aqui.");
+            var date = formattedDate(field(this.props.entry, "data", ""));
+            var photos = this.props.entry.getIn(["data", "fotos"]);
+            var photoCount = photos && typeof photos.size === "number" ? photos.size : 0;
+
+            return h(
+                "main",
+                { className: "preview-page" },
+                h(
+                    "header",
+                    { className: "preview-heading" },
+                    h("span", {}, "Viagens do conhecimento"),
+                    h("h1", {}, "Pré-visualização do álbum"),
+                    h("p", {}, "Cada viagem será publicada como um álbum separado.")
+                ),
+                h(
+                    "article",
+                    { className: "preview-travel-card" },
+                    h(
+                        "div",
+                        { className: "preview-travel-cover" },
+                        imagePreview(this.props, title, "preview-cover", "capa"),
+                        h("span", {}, photoCount + (photoCount === 1 ? " foto" : " fotos"))
+                    ),
+                    h(
+                        "div",
+                        { className: "preview-project-body" },
+                        h("small", {}, destination + " • " + date),
+                        h("h3", {}, title),
+                        h("p", {}, summary)
+                    )
+                )
+            );
+        },
+    });
+
+    CMS.registerPreviewTemplate("viagens", TravelPreview);
 })();

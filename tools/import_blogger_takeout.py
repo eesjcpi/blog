@@ -534,7 +534,7 @@ def portal_archive_cards_html(posts: list[Post], prefix: str = "") -> str:
     for key, label, count in archive_items(posts):
         items.append(
             f"""
-            <a class="archive-chip" href="{prefix}index.html#archive-{key}">
+            <a class="archive-chip" href="/#archive-{key}">
                 <span>{html.escape(label.title())}</span>
                 <strong>{count}</strong>
             </a>
@@ -771,8 +771,8 @@ def write_weather_station_page(project_dir: Path, blog_title: str) -> None:
     document = portal_shell(
         blog_title=blog_title,
         title=f"Estação Meteorológica | {blog_title}",
-        css_href="style-20260619.css",
-        script_href="script-20260619.js",
+        css_href="/assets/css/style-20260619.css",
+        script_href="/assets/js/script-20260619.js",
         body_html=body,
         active="weather",
         body_class="weather-station-body",
@@ -818,16 +818,16 @@ def institutional_nav_html(prefix: str = "", active: str = "home") -> str:
     current_weather = ' aria-current="page"' if active == "weather" else ""
     return f"""
     <nav class="main-nav" aria-label="Navegação principal">
-        <a href="{prefix}index.html#inicio"{current_home}>Início</a>
-        <a href="{prefix}index.html#sobre">Sobre</a>
-        <a href="{prefix}index.html#avisos">Avisos</a>
-        <a href="{prefix}index.html#projetos">Projetos</a>
-        <a href="{prefix}index.html#galeria">Galeria</a>
-        <a href="{prefix}index.html#instagram">Instagram</a>
-        <a href="{prefix}index.html#vestibular">Vestibular</a>
+        <a href="/#inicio"{current_home}>Início</a>
+        <a href="/#sobre">Sobre</a>
+        <a href="/#avisos">Avisos</a>
+        <a href="/#projetos">Projetos</a>
+        <a href="/#galeria">Galeria</a>
+        <a href="/#instagram">Instagram</a>
+        <a href="/#vestibular">Vestibular</a>
         <a href="{prefix}estacao-meteorologica.html"{current_weather}>Estação meteorológica</a>
         <button class="nav-alert-button" type="button" data-open-weather-alerts>Receber alertas de tempestades</button>
-        <a href="{prefix}index.html#contato">Contato</a>
+        <a href="/#contato">Contato</a>
     </nav>
     """
 
@@ -836,7 +836,7 @@ def portal_header_html(blog_title: str, prefix: str = "", active: str = "home") 
     return f"""
     <header class="site-header">
         <div class="top-strip">
-            <a class="top-school-crest" href="{prefix}index.html#inicio" aria-label="Escola Estadual São José — página inicial">
+            <a class="top-school-crest" href="/#inicio" aria-label="Escola Estadual São José — página inicial">
                 <img src="{prefix}assets/img/logo_escola.png" alt="Brasão da Escola Estadual São José">
             </a>
         </div>
@@ -879,7 +879,7 @@ def portal_footer_html(prefix: str = "") -> str:
     <footer class="site-footer" id="rodape">
         <div class="footer-grid">
             <div>
-                <a class="footer-brand" href="{prefix}index.html#inicio">
+                <a class="footer-brand" href="/#inicio">
                     <img src="{prefix}assets/img/logo_escola.png" alt="" aria-hidden="true">
                     <span>
                         <strong>EE São José</strong>
@@ -890,22 +890,22 @@ def portal_footer_html(prefix: str = "") -> str:
             </div>
             <div>
                 <h2>Navegação</h2>
-                <a href="{prefix}index.html#sobre">Sobre a escola</a>
-                <a href="{prefix}index.html#avisos">Avisos</a>
-                <a href="{prefix}index.html#projetos">Projetos escolares</a>
-                <a href="{prefix}index.html#galeria">Galeria</a>
+                <a href="/#sobre">Sobre a escola</a>
+                <a href="/#avisos">Avisos</a>
+                <a href="/#projetos">Projetos escolares</a>
+                <a href="/#galeria">Galeria</a>
             </div>
             <div>
                 <h2>Serviços</h2>
-                <a href="{prefix}index.html#vestibular">Inscrição de vestibular</a>
+                <a href="/#vestibular">Inscrição de vestibular</a>
                 <a href="{prefix}estacao-meteorologica.html">Estação meteorológica</a>
-                <a href="{prefix}index.html#instagram">Instagram</a>
+                <a href="/#instagram">Instagram</a>
                 <a href="{prefix}admin/">Área administrativa</a>
             </div>
         </div>
         <div class="footer-bottom">
             <span>Escola Estadual São José</span>
-            <a href="{prefix}index.html#inicio">Voltar ao topo</a>
+            <a href="/#inicio">Voltar ao topo</a>
         </div>
     </footer>
     """
@@ -1151,8 +1151,8 @@ def write_portal_index(project_dir: Path, blog_title: str, posts: list[Post], ev
     document = portal_shell(
         blog_title=blog_title,
         title=f"{blog_title} | Site institucional",
-        css_href="style-20260619.css",
-        script_href="script-20260619.js",
+        css_href="/assets/css/style-20260619.css",
+        script_href="/assets/js/script-20260619.js",
         body_html=body,
     )
     (project_dir / "index.html").write_text(document, encoding="utf-8")
@@ -1169,7 +1169,7 @@ def write_portal_post_pages(project_dir: Path, blog_title: str, posts: list[Post
         nav_items = []
         if previous_post:
             nav_items.append(f'<a href="{html.escape(previous_post.slug)}.html">Publicação anterior</a>')
-        nav_items.append('<a href="../index.html#arquivo">Voltar ao acervo</a>')
+        nav_items.append('<a href="/#arquivo">Voltar ao acervo</a>')
         if next_post:
             nav_items.append(f'<a href="{html.escape(next_post.slug)}.html">Próxima publicação</a>')
 
@@ -1181,7 +1181,7 @@ def write_portal_post_pages(project_dir: Path, blog_title: str, posts: list[Post
             <div class="post-page-grid">
                 <article class="post-article" data-post data-search-text="{html.escape((title + ' ' + excerpt).lower())}">
                     <header class="post-hero">
-                        <a class="back-link" href="../index.html#arquivo">Acervo</a>
+                        <a class="back-link" href="/#arquivo">Acervo</a>
                         <span>{html.escape(post.date_label)}</span>
                         <h1>{html.escape(title)}</h1>
                         <p>{html.escape(excerpt)}</p>
@@ -1209,8 +1209,8 @@ def write_portal_post_pages(project_dir: Path, blog_title: str, posts: list[Post
         document = portal_shell(
             blog_title=blog_title,
             title=f"{title} | {blog_title}",
-            css_href="../style-20260619.css",
-            script_href="../script-20260619.js",
+            css_href="/assets/css/style-20260619.css",
+            script_href="/assets/js/script-20260619.js",
             body_html=body,
             prefix="../",
             active="posts",
@@ -2550,8 +2550,10 @@ window.addEventListener("load", () => {
     }
 });
 """
-    style_path = project_dir / "style-20260619.css"
-    script_path = project_dir / "script-20260619.js"
+    style_path = project_dir / "assets" / "css" / "style-20260619.css"
+    script_path = project_dir / "assets" / "js" / "script-20260619.js"
+    style_path.parent.mkdir(parents=True, exist_ok=True)
+    script_path.parent.mkdir(parents=True, exist_ok=True)
     if not style_path.exists():
         style_path.write_text(css, encoding="utf-8")
     if not script_path.exists():

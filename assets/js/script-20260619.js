@@ -1,3 +1,8 @@
+if (/\/index\.html$/i.test(window.location.pathname)) {
+    const cleanPath = window.location.pathname.replace(/\/index\.html$/i, "/");
+    window.history.replaceState(null, "", `${cleanPath}${window.location.search}${window.location.hash}`);
+}
+
 const searchInputs = Array.from(document.querySelectorAll("[data-search]"));
 const forms = Array.from(document.querySelectorAll("[data-search-form]"));
 const posts = Array.from(document.querySelectorAll("[data-post]"));
@@ -111,52 +116,7 @@ document.querySelectorAll(".archive-chip[href*='#archive-']").forEach((link) => 
     });
 });
 
-const instagramCardMedia = Array.from(document.querySelectorAll(".instagram-post-media"));
 const instagramPreviewByPost = new Map();
-
-instagramCardMedia.forEach((media) => {
-    const embed = media.querySelector(".instagram-card-embed");
-    const iframe = media.querySelector("iframe");
-    const instagramUrl =
-        embed?.dataset.instgrmPermalink ||
-        embed?.querySelector("a")?.href ||
-        iframe?.src;
-    const shortcode = instagramUrl?.match(/instagram\.com\/(?:p|reel)\/([^/?]+)/i)?.[1];
-    const card = media.closest(".instagram-post-card");
-    const postPath = card?.querySelector("h3 a")?.getAttribute("href");
-    const date = card?.querySelector(".news-meta span")?.textContent?.trim() || "";
-
-    if (!instagramUrl || !shortcode) {
-        return;
-    }
-
-    const preview = document.createElement("a");
-    preview.className = "instagram-local-preview";
-    preview.href = instagramUrl;
-    preview.target = "_blank";
-    preview.rel = "noopener";
-    preview.setAttribute("aria-label", `Abrir publicação do Instagram de ${date || "EE São José"}`);
-
-    const image = document.createElement("img");
-    image.src = `assets/img/instagram-${shortcode}.jpg`;
-    image.alt = `Publicação do Instagram da EE São José${date ? ` — ${date}` : ""}`;
-    image.loading = "lazy";
-    image.addEventListener("error", () => preview.classList.add("is-fallback"));
-
-    const label = document.createElement("span");
-    label.innerHTML = `<strong>Instagram da escola</strong>${date ? `<small>${date}</small>` : ""}`;
-
-    preview.append(image, label);
-    media.replaceChildren(preview);
-
-    if (postPath) {
-        instagramPreviewByPost.set(postPath, {
-            image: image.src,
-            instagramUrl,
-            date,
-        });
-    }
-});
 
 const loadArchiveInstagramImage = async (item) => {
     const thumb = item.querySelector(".archive-thumb");
@@ -181,7 +141,7 @@ const loadArchiveInstagramImage = async (item) => {
             if (!shortcode) {
                 return;
             }
-            imageSource = new URL(`assets/img/instagram-${shortcode}.jpg`, document.baseURI).href;
+            imageSource = new URL(`/assets/img/instagram-${shortcode}.jpg`, window.location.origin).href;
         } catch {
             return;
         }
