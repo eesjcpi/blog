@@ -1106,12 +1106,13 @@ section[id] {
 
 .instagram-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
-    align-items: stretch;
+    align-items: start;
 }
 
 .instagram-post-card {
+    align-self: start;
     overflow: hidden;
 }
 
@@ -1278,17 +1279,21 @@ section[id] {
 }
 
 .instagram-post-media {
-    display: grid;
+    display: block;
     width: 100%;
-    aspect-ratio: 4 / 3;
     height: auto;
-    overflow: hidden;
-    place-items: stretch;
+    overflow: visible;
     background: #fff;
     border-bottom: 1px solid var(--line);
 }
 
+.instagram-post-media.has-local-preview {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+}
+
 .instagram-post-media iframe {
+    display: block;
     width: 100% !important;
     min-width: 100% !important;
     max-width: none !important;
@@ -1296,6 +1301,7 @@ section[id] {
 }
 
 .instagram-card-embed {
+    display: block;
     width: 100% !important;
     min-width: 100% !important;
     max-width: none !important;
@@ -1344,6 +1350,16 @@ section[id] {
     gap: 10px;
     color: #fff;
     filter: drop-shadow(0 2px 8px rgba(15, 0, 45, 0.8));
+}
+
+.instagram-local-preview > span strong {
+    font-size: 0.96rem;
+}
+
+.instagram-local-preview > span small {
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 8px;
 }
 
 .instagram-local-preview > span strong,

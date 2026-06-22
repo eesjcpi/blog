@@ -449,8 +449,8 @@ def portal_shell(
     <meta name="twitter:image" content="{SOCIAL_IMAGE_URL}">
     <!-- social-preview:end -->
     <link rel="stylesheet" href="{css_href}">
-    <script async defer src="https://www.instagram.com/embed.js"></script>
     <script src="{script_href}" defer></script>
+    <script src="https://www.instagram.com/embed.js" defer></script>
 </head>
 <body{f' class="{html.escape(body_class)}"' if body_class else ''}>
     {GENERATED}
@@ -1194,8 +1194,8 @@ def write_portal_index(project_dir: Path, blog_title: str, posts: list[Post], ev
     document = portal_shell(
         blog_title=blog_title,
         title=f"{blog_title} | Site institucional",
-        css_href="/assets/css/style-20260619.css",
-        script_href="/assets/js/script-20260619.js",
+        css_href="/assets/css/style-20260619.css?v=20260622-instagram-cards",
+        script_href="/assets/js/script-20260619.js?v=20260622-instagram-cards",
         body_html=body,
         page_path="/",
     )
@@ -1953,26 +1953,30 @@ body.has-open-modal {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
-    align-items: stretch;
+    align-items: start;
 }
 
 .instagram-post-card {
-    display: grid;
-    grid-template-rows: 680px minmax(170px, 1fr);
+    align-self: start;
     overflow: hidden;
 }
 
 .instagram-post-media {
-    display: grid;
+    display: block;
     width: 100%;
-    height: 680px;
-    overflow: hidden;
-    place-items: start center;
+    height: auto;
+    overflow: visible;
     background: #fff;
     border-bottom: 1px solid var(--line);
 }
 
+.instagram-post-media.has-local-preview {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+}
+
 .instagram-post-media iframe {
+    display: block;
     width: 100% !important;
     min-width: 100% !important;
     max-width: none !important;
@@ -1980,18 +1984,89 @@ body.has-open-modal {
 }
 
 .instagram-card-embed {
+    display: block;
     width: 100% !important;
     min-width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
 }
 
-.instagram-post-body {
-    display: grid;
-    grid-template-rows: auto auto 1fr;
-    align-content: start;
+.instagram-local-preview {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.22), transparent 130px),
+        linear-gradient(145deg, #2410c2, #a80052 68%, #ed0015);
+}
+
+.instagram-local-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 360ms ease;
+}
+
+.instagram-local-preview:hover img {
+    transform: scale(1.045);
+}
+
+.instagram-local-preview::after {
+    position: absolute;
+    inset: 45% 0 0;
+    background: linear-gradient(transparent, rgba(16, 6, 70, 0.82));
+    content: "";
+}
+
+.instagram-local-preview > span {
+    position: absolute;
+    z-index: 1;
+    right: 14px;
+    bottom: 14px;
+    left: 14px;
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
     gap: 10px;
-    padding: 16px;
+    color: #fff;
+    filter: drop-shadow(0 2px 8px rgba(15, 0, 45, 0.8));
+}
+
+.instagram-local-preview > span strong,
+.instagram-local-preview > span small {
+    display: block;
+}
+
+.instagram-local-preview > span strong {
+    font-size: 0.96rem;
+}
+
+.instagram-local-preview > span small {
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.2);
+    font-weight: 900;
+    padding: 5px 8px;
+}
+
+.instagram-local-preview.is-fallback img {
+    display: none;
+}
+
+.instagram-local-preview.is-fallback::before {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: url("../img/logo_escola.png") center / 92px auto no-repeat;
+    content: "";
+    filter: drop-shadow(0 10px 20px rgba(20, 0, 65, 0.32));
+}
+
+.instagram-post-body {
+    display: none;
 }
 
 .instagram-post-body h3,
@@ -2460,14 +2535,6 @@ body.has-open-modal {
         min-height: 240px;
     }
 
-    .instagram-post-media {
-        height: 720px;
-    }
-
-    .instagram-post-card {
-        grid-template-rows: 720px minmax(170px, 1fr);
-    }
-
     .archive-news-item {
         grid-template-columns: 96px minmax(0, 1fr);
     }
@@ -2536,7 +2603,43 @@ body.has-open-modal {
     }
 }
 """
-    js = """const searchInputs = Array.from(document.querySelectorAll("[data-search]"));
+    js = """document.querySelectorAll(".instagram-post-media .instagram-card-embed").forEach((embed) => {
+    const instagramUrl = embed.dataset.instgrmPermalink || embed.querySelector("a")?.href;
+    const shortcode = instagramUrl?.match(/\\/(?:p|reel|tv)\\/([^/?#]+)/i)?.[1];
+    if (!instagramUrl || !shortcode) {
+        return;
+    }
+
+    const media = embed.closest(".instagram-post-media");
+    const card = embed.closest(".instagram-post-card");
+    const title = card?.querySelector(".instagram-post-body h3")?.textContent?.trim() || "Publicação da EE São José";
+    const date = card?.querySelector(".news-meta span")?.textContent?.trim() || "";
+    const preview = document.createElement("a");
+    const image = document.createElement("img");
+    const caption = document.createElement("span");
+    const label = document.createElement("strong");
+    const detail = document.createElement("small");
+
+    preview.className = "instagram-local-preview";
+    preview.href = instagramUrl;
+    preview.target = "_blank";
+    preview.rel = "noopener";
+    preview.setAttribute("aria-label", `${title} — abrir no Instagram`);
+
+    image.src = `/assets/img/instagram-${shortcode}.jpg`;
+    image.alt = title;
+    image.loading = "lazy";
+    image.addEventListener("error", () => preview.classList.add("is-fallback"), { once: true });
+
+    label.textContent = "Ver no Instagram";
+    detail.textContent = date || "@eesjms";
+    caption.append(label, detail);
+    preview.append(image, caption);
+    media?.classList.add("has-local-preview");
+    embed.replaceWith(preview);
+});
+
+const searchInputs = Array.from(document.querySelectorAll("[data-search]"));
 const forms = Array.from(document.querySelectorAll("[data-search-form]"));
 const posts = Array.from(document.querySelectorAll("[data-post]"));
 const groups = Array.from(document.querySelectorAll("[data-date-group]"));

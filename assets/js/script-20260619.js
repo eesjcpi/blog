@@ -3,6 +3,42 @@ if (/\/index\.html$/i.test(window.location.pathname)) {
     window.history.replaceState(null, "", `${cleanPath}${window.location.search}${window.location.hash}`);
 }
 
+document.querySelectorAll(".instagram-post-media .instagram-card-embed").forEach((embed) => {
+    const instagramUrl = embed.dataset.instgrmPermalink || embed.querySelector("a")?.href;
+    const shortcode = instagramUrl?.match(/\/(?:p|reel|tv)\/([^/?#]+)/i)?.[1];
+    if (!instagramUrl || !shortcode) {
+        return;
+    }
+
+    const media = embed.closest(".instagram-post-media");
+    const card = embed.closest(".instagram-post-card");
+    const title = card?.querySelector(".instagram-post-body h3")?.textContent?.trim() || "Publicação da EE São José";
+    const date = card?.querySelector(".news-meta span")?.textContent?.trim() || "";
+    const preview = document.createElement("a");
+    const image = document.createElement("img");
+    const caption = document.createElement("span");
+    const label = document.createElement("strong");
+    const detail = document.createElement("small");
+
+    preview.className = "instagram-local-preview";
+    preview.href = instagramUrl;
+    preview.target = "_blank";
+    preview.rel = "noopener";
+    preview.setAttribute("aria-label", `${title} — abrir no Instagram`);
+
+    image.src = `/assets/img/instagram-${shortcode}.jpg`;
+    image.alt = title;
+    image.loading = "lazy";
+    image.addEventListener("error", () => preview.classList.add("is-fallback"), { once: true });
+
+    label.textContent = "Ver no Instagram";
+    detail.textContent = date || "@eesjms";
+    caption.append(label, detail);
+    preview.append(image, caption);
+    media?.classList.add("has-local-preview");
+    embed.replaceWith(preview);
+});
+
 const sectionRoutes = {
     "/": "inicio",
     "/sobre/": "sobre",
