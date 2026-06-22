@@ -76,7 +76,7 @@ collections:
         name: imagem
         widget: image
         required: false
-        hint: Use para Avisos, Projetos, Galeria ou Vestibular. A imagem será salva no repositório.
+        hint: Para Instagram, esta será a capa do card. Se não escolher, o site tentará obter automaticamente a capa da publicação.
 
       - label: Link da publicação no Instagram
         name: instagram_url

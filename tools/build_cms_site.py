@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 
 
 CATEGORIES = {"avisos", "projetos", "galeria", "instagram", "vestibular"}
@@ -130,6 +131,11 @@ def clean_image(value: object) -> str:
     return text.replace("\\", "/").lstrip("./")
 
 
+def instagram_shortcode(value: str) -> str:
+    match = re.search(r"/(?:p|reel|tv)/([^/?#]+)", value, flags=re.IGNORECASE)
+    return match.group(1) if match else ""
+
+
 def load_entries(source: Path) -> list[Entry]:
     folder = source / "content" / "postagens"
     entries: list[Entry] = []
@@ -236,6 +242,45 @@ def copy_static_site(source: Path, output: Path) -> None:
     (output / ".nojekyll").write_text("", encoding="utf-8")
 
 
+def download_instagram_previews(entries: list[Entry], output: Path) -> None:
+    image_dir = output / "assets" / "img"
+    image_dir.mkdir(parents=True, exist_ok=True)
+
+    for entry in entries:
+        if entry.category != "instagram" or not entry.instagram_url or entry.image:
+            continue
+
+        shortcode = instagram_shortcode(entry.instagram_url)
+        if not shortcode:
+            continue
+
+        target = image_dir / f"instagram-{shortcode}.jpg"
+        if target.exists():
+            continue
+
+        request = Request(
+            f"https://www.instagram.com/p/{shortcode}/media/?size=l",
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 Chrome/131.0 Safari/537.36"
+                ),
+                "Accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+            },
+        )
+
+        try:
+            with urlopen(request, timeout=25) as response:
+                content_type = response.headers.get_content_type()
+                image_data = response.read()
+            if not content_type.startswith("image/") or not image_data:
+                raise RuntimeError(f"resposta inválida: {content_type}")
+            target.write_bytes(image_data)
+            print(f"Capa do Instagram obtida: {shortcode}")
+        except Exception as exc:
+            print(f"Aviso: não foi possível obter a capa do Instagram {shortcode}: {exc}")
+
+
 def public_url_for_html(output: Path, path: Path) -> str:
     relative = path.relative_to(output).as_posix()
     if relative == "index.html":
@@ -297,9 +342,15 @@ def add_social_metadata_to_site(output: Path) -> None:
 def media_html(entry: Entry, prefix: str = "") -> str:
     if entry.instagram_url:
         url = html.escape(entry.instagram_url, quote=True)
+        preview_image = ""
+        if entry.image:
+            image_url = entry.image if urlparse(entry.image).scheme else f"/{entry.image.lstrip('/')}"
+            preview_image = (
+                f' data-preview-image="{html.escape(image_url, quote=True)}"'
+            )
         return (
             f'<blockquote class="instagram-media instagram-card-embed" '
-            f'data-instgrm-permalink="{url}" data-instgrm-version="14">'
+            f'data-instgrm-permalink="{url}" data-instgrm-version="14"{preview_image}>'
             f'<a href="{url}" target="_blank" rel="noopener">'
             f"Ver publicação no Instagram</a></blockquote>"
         )
@@ -594,6 +645,7 @@ def build(source: Path, output: Path) -> None:
     entries = load_entries(source)
     travel_albums = load_travel_albums(source)
     copy_static_site(source, output)
+    download_instagram_previews(entries, output)
 
     index_path = output / "index.html"
     index_html = index_path.read_text(encoding="utf-8")

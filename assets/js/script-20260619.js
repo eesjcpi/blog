@@ -26,10 +26,17 @@ document.querySelectorAll(".instagram-post-media .instagram-card-embed").forEach
     preview.rel = "noopener";
     preview.setAttribute("aria-label", `${title} — abrir no Instagram`);
 
-    image.src = `/assets/img/instagram-${shortcode}.jpg`;
+    image.src = embed.dataset.previewImage || `/assets/img/instagram-${shortcode}.jpg`;
     image.alt = title;
     image.loading = "lazy";
-    image.addEventListener("error", () => preview.classList.add("is-fallback"), { once: true });
+    image.addEventListener(
+        "error",
+        () => {
+            preview.replaceWith(embed);
+            window.instgrm?.Embeds?.process?.();
+        },
+        { once: true }
+    );
 
     label.textContent = "Ver no Instagram";
     detail.textContent = date || "@eesjms";

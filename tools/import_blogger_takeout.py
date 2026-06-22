@@ -1194,8 +1194,8 @@ def write_portal_index(project_dir: Path, blog_title: str, posts: list[Post], ev
     document = portal_shell(
         blog_title=blog_title,
         title=f"{blog_title} | Site institucional",
-        css_href="/assets/css/style-20260619.css?v=20260622-instagram-cards",
-        script_href="/assets/js/script-20260619.js?v=20260622-instagram-cards",
+        css_href="/assets/css/style-20260619.css?v=20260622-instagram-cards-v2",
+        script_href="/assets/js/script-20260619.js?v=20260622-instagram-cards-v2",
         body_html=body,
         page_path="/",
     )
@@ -2051,20 +2051,6 @@ body.has-open-modal {
     padding: 5px 8px;
 }
 
-.instagram-local-preview.is-fallback img {
-    display: none;
-}
-
-.instagram-local-preview.is-fallback::before {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    background: url("../img/logo_escola.png") center / 92px auto no-repeat;
-    content: "";
-    filter: drop-shadow(0 10px 20px rgba(20, 0, 65, 0.32));
-}
-
 .instagram-post-body {
     display: none;
 }
@@ -2626,10 +2612,17 @@ body.has-open-modal {
     preview.rel = "noopener";
     preview.setAttribute("aria-label", `${title} — abrir no Instagram`);
 
-    image.src = `/assets/img/instagram-${shortcode}.jpg`;
+    image.src = embed.dataset.previewImage || `/assets/img/instagram-${shortcode}.jpg`;
     image.alt = title;
     image.loading = "lazy";
-    image.addEventListener("error", () => preview.classList.add("is-fallback"), { once: true });
+    image.addEventListener(
+        "error",
+        () => {
+            preview.replaceWith(embed);
+            window.instgrm?.Embeds?.process?.();
+        },
+        { once: true }
+    );
 
     label.textContent = "Ver no Instagram";
     detail.textContent = date || "@eesjms";
