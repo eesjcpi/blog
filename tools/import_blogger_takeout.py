@@ -680,7 +680,7 @@ def write_weather_station_page(project_dir: Path, blog_title: str) -> None:
                 </dl>
             </div>
             <figure class="weather-station-photo">
-                <img src="assets/img/img-20220909-083336.jpg" alt="Sensores da estação meteorológica da EE São José ao entardecer">
+                <img src="/assets/img/img-20220909-083336.jpg" alt="Sensores da estação meteorológica da EE São José ao entardecer">
                 <figcaption>
                     <span>Estação da EE São José</span>
                     <strong>Ciência e tecnologia a serviço da comunidade</strong>
@@ -774,10 +774,19 @@ def write_weather_station_page(project_dir: Path, blog_title: str) -> None:
         css_href="/assets/css/style-20260619.css",
         script_href="/assets/js/script-20260619.js",
         body_html=body,
+        prefix="../",
         active="weather",
         body_class="weather-station-body",
     )
-    (project_dir / "estacao-meteorologica.html").write_text(document, encoding="utf-8")
+    weather_dir = project_dir / "estacao-meteorologica"
+    weather_dir.mkdir(parents=True, exist_ok=True)
+    (weather_dir / "index.html").write_text(document, encoding="utf-8")
+    legacy_redirect = """<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta http-equiv="refresh" content="0; url=/estacao-meteorologica/">
+<script>window.location.replace("/estacao-meteorologica/" + window.location.search + window.location.hash);</script>
+</head><body><a href="/estacao-meteorologica/">Abrir Estação Meteorológica</a></body></html>"""
+    (project_dir / "estacao-meteorologica.html").write_text(legacy_redirect, encoding="utf-8")
 
 
 def institutional_post_title(post: Post) -> str:
@@ -818,16 +827,16 @@ def institutional_nav_html(prefix: str = "", active: str = "home") -> str:
     current_weather = ' aria-current="page"' if active == "weather" else ""
     return f"""
     <nav class="main-nav" aria-label="Navegação principal">
-        <a href="/#inicio"{current_home}>Início</a>
-        <a href="/#sobre">Sobre</a>
-        <a href="/#avisos">Avisos</a>
-        <a href="/#projetos">Projetos</a>
-        <a href="/#galeria">Galeria</a>
-        <a href="/#instagram">Instagram</a>
-        <a href="/#vestibular">Vestibular</a>
-        <a href="{prefix}estacao-meteorologica.html"{current_weather}>Estação meteorológica</a>
+        <a href="/"{current_home}>Início</a>
+        <a href="/sobre/">Sobre</a>
+        <a href="/avisos/">Avisos</a>
+        <a href="/projetos/">Projetos</a>
+        <a href="/galeria/">Galeria</a>
+        <a href="/instagram/">Instagram</a>
+        <a href="/vestibular/">Vestibular</a>
+        <a href="/estacao-meteorologica/"{current_weather}>Estação meteorológica</a>
         <button class="nav-alert-button" type="button" data-open-weather-alerts>Receber alertas de tempestades</button>
-        <a href="/#contato">Contato</a>
+        <a href="/contato/">Contato</a>
     </nav>
     """
 
@@ -836,7 +845,7 @@ def portal_header_html(blog_title: str, prefix: str = "", active: str = "home") 
     return f"""
     <header class="site-header">
         <div class="top-strip">
-            <a class="top-school-crest" href="/#inicio" aria-label="Escola Estadual São José — página inicial">
+            <a class="top-school-crest" href="/" aria-label="Escola Estadual São José — página inicial">
                 <img src="{prefix}assets/img/logo_escola.png" alt="Brasão da Escola Estadual São José">
             </a>
         </div>
@@ -879,7 +888,7 @@ def portal_footer_html(prefix: str = "") -> str:
     <footer class="site-footer" id="rodape">
         <div class="footer-grid">
             <div>
-                <a class="footer-brand" href="/#inicio">
+                <a class="footer-brand" href="/">
                     <img src="{prefix}assets/img/logo_escola.png" alt="" aria-hidden="true">
                     <span>
                         <strong>EE São José</strong>
@@ -890,22 +899,22 @@ def portal_footer_html(prefix: str = "") -> str:
             </div>
             <div>
                 <h2>Navegação</h2>
-                <a href="/#sobre">Sobre a escola</a>
-                <a href="/#avisos">Avisos</a>
-                <a href="/#projetos">Projetos escolares</a>
-                <a href="/#galeria">Galeria</a>
+                <a href="/sobre/">Sobre a escola</a>
+                <a href="/avisos/">Avisos</a>
+                <a href="/projetos/">Projetos escolares</a>
+                <a href="/galeria/">Galeria</a>
             </div>
             <div>
                 <h2>Serviços</h2>
-                <a href="/#vestibular">Inscrição de vestibular</a>
-                <a href="{prefix}estacao-meteorologica.html">Estação meteorológica</a>
-                <a href="/#instagram">Instagram</a>
+                <a href="/vestibular/">Inscrição de vestibular</a>
+                <a href="/estacao-meteorologica/">Estação meteorológica</a>
+                <a href="/instagram/">Instagram</a>
                 <a href="{prefix}admin/">Área administrativa</a>
             </div>
         </div>
         <div class="footer-bottom">
             <span>Escola Estadual São José</span>
-            <a href="/#inicio">Voltar ao topo</a>
+            <a href="/">Voltar ao topo</a>
         </div>
     </footer>
     """
@@ -920,8 +929,8 @@ def hero_section_html(blog_title: str, posts: list[Post]) -> str:
             <h1>{html.escape(blog_title)}: escola, comunidade e aprendizagem em movimento.</h1>
             <p>Um espaço institucional para acompanhar avisos, projetos, registros da comunidade escolar e serviços importantes para estudantes e famílias.</p>
             <div class="hero-actions">
-                <a class="primary-action" href="#avisos">Ver avisos</a>
-                <a class="secondary-action" href="#sobre">Conhecer a escola</a>
+                <a class="primary-action" href="/avisos/">Ver avisos</a>
+                <a class="secondary-action" href="/sobre/">Conhecer a escola</a>
             </div>
         </div>
         <a class="hero-media" href="{html.escape(post.post_path)}" aria-label="{html.escape(institutional_post_title(post))}">
@@ -1115,7 +1124,7 @@ def contact_section_html() -> str:
             <article>
                 <span>Estação</span>
                 <strong>Monitoramento meteorológico</strong>
-                <a href="estacao-meteorologica.html">Abrir painel</a>
+                <a href="/estacao-meteorologica/">Abrir painel</a>
             </article>
         </div>
     </section>

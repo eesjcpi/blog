@@ -23,6 +23,17 @@ EXCLUDED_NAMES = {
     "__pycache__",
 }
 
+SECTION_ROUTES = {
+    "sobre": "sobre",
+    "avisos": "avisos",
+    "projetos": "projetos",
+    "viagens": "viagens",
+    "galeria": "galeria",
+    "instagram": "instagram",
+    "vestibular": "vestibular",
+    "contato": "contato",
+}
+
 
 @dataclass
 class Entry:
@@ -289,6 +300,18 @@ def insert_after_opening(html_text: str, opening: str, content: str) -> str:
     return html_text[:position] + "\n" + content + html_text[position:]
 
 
+def write_section_routes(output: Path, index_html: str) -> None:
+    route_html = index_html.replace(
+        "<head>",
+        '<head>\n    <base href="/">',
+        1,
+    )
+    for route in SECTION_ROUTES.values():
+        target = output / route / "index.html"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(route_html, encoding="utf-8")
+
+
 def markdown_inline(value: str) -> str:
     escaped = html.escape(value)
     escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
@@ -425,7 +448,7 @@ def write_travel_album_page(output: Path, album: TravelAlbum) -> None:
 <body>
     <header class="site-header cms-page-header">
         <div class="brand-row">
-            <a class="school-brand" href="/#viagens">
+            <a class="school-brand" href="/viagens/">
                 <img class="brand-logo" src="../assets/img/logo_escola.png" alt="EE São José">
                 <span><strong>EE São José</strong><small>Voltar às viagens</small></span>
             </a>
@@ -437,7 +460,7 @@ def write_travel_album_page(output: Path, album: TravelAlbum) -> None:
                 <span>{destination} • {album.date_label}</span>
                 <h1>{title}</h1>
                 <p>{summary}</p>
-                <a class="text-link" href="/#viagens">← Voltar aos álbuns</a>
+                <a class="text-link" href="/viagens/">← Voltar aos álbuns</a>
             </div>
             {cover}
         </section>
@@ -549,6 +572,7 @@ def build(source: Path, output: Path) -> None:
         )
 
     index_path.write_text(index_html, encoding="utf-8")
+    write_section_routes(output, index_html)
     for entry in entries:
         write_entry_page(output, entry)
     for album in travel_albums:

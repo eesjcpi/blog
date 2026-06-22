@@ -3,6 +3,31 @@ if (/\/index\.html$/i.test(window.location.pathname)) {
     window.history.replaceState(null, "", `${cleanPath}${window.location.search}${window.location.hash}`);
 }
 
+const sectionRoutes = {
+    "/": "inicio",
+    "/sobre/": "sobre",
+    "/avisos/": "avisos",
+    "/projetos/": "projetos",
+    "/viagens/": "viagens",
+    "/galeria/": "galeria",
+    "/instagram/": "instagram",
+    "/vestibular/": "vestibular",
+    "/contato/": "contato",
+};
+
+const normalizedRoutePath = (pathname) => {
+    const clean = pathname.replace(/\/index\.html$/i, "/");
+    return clean.endsWith("/") ? clean : `${clean}/`;
+};
+
+const sectionIdFromUrl = (url) =>
+    url.hash ? url.hash.slice(1) : sectionRoutes[normalizedRoutePath(url.pathname)] || "";
+
+const initialSectionId = sectionRoutes[normalizedRoutePath(window.location.pathname)];
+if (initialSectionId && initialSectionId !== "inicio") {
+    document.getElementById(initialSectionId)?.scrollIntoView({ block: "start" });
+}
+
 const searchInputs = Array.from(document.querySelectorAll("[data-search]"));
 const forms = Array.from(document.querySelectorAll("[data-search-form]"));
 const posts = Array.from(document.querySelectorAll("[data-post]"));
@@ -342,15 +367,10 @@ const animateTargetSection = (target) => {
 const normalizePagePath = (pathname) => pathname.replace(/index\.html$/i, "");
 
 const updateActiveNavFromLocation = () => {
-    const currentPath = normalizePagePath(window.location.pathname);
-    const currentHash = window.location.hash || "#inicio";
+    const currentSection = window.location.hash.slice(1) || sectionRoutes[normalizedRoutePath(window.location.pathname)] || "inicio";
     const matchingLink = navLinks.find((link) => {
         const url = new URL(link.href, window.location.href);
-        return (
-            url.origin === window.location.origin &&
-            normalizePagePath(url.pathname) === currentPath &&
-            (url.hash || "#inicio") === currentHash
-        );
+        return url.origin === window.location.origin && sectionIdFromUrl(url) === currentSection;
     });
 
     if (matchingLink) {
@@ -377,16 +397,14 @@ navLinks.forEach((link) => {
         }
 
         const url = new URL(link.href, window.location.href);
-        const samePage =
-            url.origin === window.location.origin &&
-            normalizePagePath(url.pathname) === normalizePagePath(window.location.pathname);
-        const target = samePage && url.hash ? document.querySelector(url.hash) : null;
+        const sectionId = url.origin === window.location.origin ? sectionIdFromUrl(url) : "";
+        const target = sectionId ? document.getElementById(sectionId) : null;
 
         setActiveNavLink(link);
 
         if (target) {
             event.preventDefault();
-            history.pushState(null, "", url.hash);
+            history.pushState(null, "", `${url.pathname}${url.search}${url.hash}`);
             target.scrollIntoView({ behavior: "smooth", block: "start" });
             window.setTimeout(() => animateTargetSection(target), 260);
             restoreActiveNavAfterScroll(link);
@@ -407,7 +425,7 @@ const observedSections = Array.from(document.querySelectorAll("main section[id]"
 if ("IntersectionObserver" in window && observedSections.length) {
     const sectionLinks = navLinks.filter((link) => {
         const url = new URL(link.href, window.location.href);
-        return url.pathname.endsWith("index.html") && url.hash;
+        return url.origin === window.location.origin && Boolean(sectionIdFromUrl(url));
     });
 
     const sectionObserver = new IntersectionObserver(
@@ -426,7 +444,7 @@ if ("IntersectionObserver" in window && observedSections.length) {
 
             const matchingLink = sectionLinks.find((link) => {
                 const url = new URL(link.href, window.location.href);
-                return url.hash === `#${visibleEntry.target.id}`;
+                return sectionIdFromUrl(url) === visibleEntry.target.id;
             });
 
             if (matchingLink) {
