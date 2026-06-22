@@ -57,11 +57,25 @@ montará e publicará a página.
 
 1. Acesse `/admin/`.
 2. Clique em entrar com GitHub.
-3. Crie uma postagem.
-4. Escolha a categoria.
-5. Preencha imagem ou link do Instagram quando necessário.
+3. Para avisos, projetos, galeria, Instagram ou vestibular, abra `Postagens`.
+4. Para cadastrar uma viagem, abra a coleção `Viagens` e clique em
+   `Novo álbum de viagem`.
+5. Preencha os dados. A viagem pode ser salva sem fotos e completada depois.
 6. Marque `Publicado`.
 7. Salve.
 
 Somente contas com permissão de escrita no repositório `eesjcpi/blog`
 conseguirão publicar.
+
+## 6. Excluir conteúdo
+
+Postagens e viagens criadas pela área administrativa podem ser excluídas:
+
+1. Abra a coleção `Postagens` ou `Viagens`.
+2. Abra o item que deseja remover.
+3. Use a opção `Excluir entrada` no menu de ações.
+4. Confirme a exclusão.
+
+A exclusão cria um commit no GitHub e uma nova publicação do site é iniciada.
+As publicações históricas importadas diretamente para a pasta `posts` não
+aparecem no painel e, por isso, não podem ser excluídas por ele.

@@ -4,6 +4,12 @@ backend:
   branch: main
   base_url: https://ee-sao-jose-blog-auth.rodrigoraa254.workers.dev
   auth_endpoint: auth
+  commit_messages:
+    create: 'Criar {{collection}} "{{slug}}"'
+    update: 'Atualizar {{collection}} "{{slug}}"'
+    delete: 'Excluir {{collection}} "{{slug}}"'
+    uploadMedia: 'Enviar imagem "{{path}}"'
+    deleteMedia: 'Excluir imagem "{{path}}"'
 
 locale: pt
 site_url: https://blog.eesjv.com.br/
@@ -24,6 +30,7 @@ collections:
   - name: postagens
     label: Postagens
     label_singular: Postagem
+    description: Avisos, projetos, galeria, Instagram e vestibular. Para viagens, use a coleção "Viagens".
     folder: content/postagens
     create: true
     delete: true
@@ -98,8 +105,9 @@ collections:
         required: false
 
   - name: viagens
-    label: Álbuns de viagens
+    label: Viagens
     label_singular: Álbum de viagem
+    description: Crie uma viagem, salve e adicione quantas fotos desejar. Também é possível publicar o álbum sem fotos e completá-lo depois.
     folder: content/viagens
     create: true
     delete: true
@@ -118,9 +126,10 @@ collections:
       - label: Data
         name: data
         widget: datetime
-        date_format: "DD/MM/YYYY"
+        date_format: "YYYY-MM-DD"
         time_format: false
-        format: "YYYY-MM-DD"
+        picker_utc: true
+        default: "{{now}}"
 
       - label: Destino
         name: destino
@@ -143,7 +152,12 @@ collections:
         widget: list
         label_singular: Foto
         summary: "{{fields.legenda}}"
-        min: 1
+        required: false
+        allow_add: true
+        allow_remove: true
+        allow_reorder: true
+        collapsed: false
+        hint: Você pode salvar a viagem sem fotos e adicioná-las posteriormente.
         fields:
           - label: Imagem
             name: imagem
@@ -157,3 +171,4 @@ collections:
         name: publicado
         widget: boolean
         default: true
+        hint: Desmarque para manter a viagem cadastrada sem exibi-la no site.
