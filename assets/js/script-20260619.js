@@ -6,6 +6,7 @@ if (/\/index\.html$/i.test(window.location.pathname)) {
 const sectionRoutes = {
     "/": "inicio",
     "/sobre/": "sobre",
+    "/sore/": "sobre",
     "/avisos/": "avisos",
     "/projetos/": "projetos",
     "/viagens/": "viagens",
@@ -22,6 +23,23 @@ const normalizedRoutePath = (pathname) => {
 
 const sectionIdFromUrl = (url) =>
     url.hash ? url.hash.slice(1) : sectionRoutes[normalizedRoutePath(url.pathname)] || "";
+
+document.querySelectorAll('a[href]').forEach((link) => {
+    const href = link.getAttribute("href");
+    if (!href || href.startsWith("#")) {
+        return;
+    }
+
+    const url = new URL(href, window.location.origin);
+    if (url.origin !== window.location.origin || url.hash) {
+        return;
+    }
+
+    const sectionId = sectionRoutes[normalizedRoutePath(url.pathname)];
+    if (sectionId && sectionId !== "inicio") {
+        link.setAttribute("href", `/#${sectionId}`);
+    }
+});
 
 const initialSectionId = sectionRoutes[normalizedRoutePath(window.location.pathname)];
 if (initialSectionId && initialSectionId !== "inicio") {

@@ -34,6 +34,14 @@ SECTION_ROUTES = {
     "contato": "contato",
 }
 
+SITE_ORIGIN = "https://blog.eesjv.com.br"
+SITE_DESCRIPTION = "Site institucional da Escola Estadual São José, em Vicentina/MS."
+SOCIAL_IMAGE_URL = f"{SITE_ORIGIN}/assets/img/sobre/escola.jpeg"
+SOCIAL_META_PATTERN = re.compile(
+    r"\s*<!-- social-preview:start -->.*?<!-- social-preview:end -->",
+    flags=re.DOTALL,
+)
+
 
 @dataclass
 class Entry:
@@ -226,6 +234,64 @@ def copy_static_site(source: Path, output: Path) -> None:
             shutil.copy2(item, target)
 
     (output / ".nojekyll").write_text("", encoding="utf-8")
+
+
+def public_url_for_html(output: Path, path: Path) -> str:
+    relative = path.relative_to(output).as_posix()
+    if relative == "index.html":
+        public_path = "/"
+    elif relative.endswith("/index.html"):
+        public_path = f"/{relative[:-10]}"
+    else:
+        public_path = f"/{relative}"
+    return f"{SITE_ORIGIN}{public_path}"
+
+
+def social_metadata(title: str, page_url: str, og_type: str) -> str:
+    escaped_title = html.escape(html.unescape(title), quote=True)
+    escaped_description = html.escape(SITE_DESCRIPTION, quote=True)
+    return f"""
+    <!-- social-preview:start -->
+    <meta name="description" content="{escaped_description}">
+    <link rel="icon" type="image/png" href="/assets/img/logo_escola.png">
+    <link rel="apple-touch-icon" href="/assets/img/logo_escola.png">
+    <link rel="canonical" href="{page_url}">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:type" content="{og_type}">
+    <meta property="og:site_name" content="EE São José">
+    <meta property="og:title" content="{escaped_title}">
+    <meta property="og:description" content="{escaped_description}">
+    <meta property="og:url" content="{page_url}">
+    <meta property="og:image" content="{SOCIAL_IMAGE_URL}">
+    <meta property="og:image:secure_url" content="{SOCIAL_IMAGE_URL}">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="1280">
+    <meta property="og:image:height" content="960">
+    <meta property="og:image:alt" content="Vista aérea da Escola Estadual São José">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{escaped_title}">
+    <meta name="twitter:description" content="{escaped_description}">
+    <meta name="twitter:image" content="{SOCIAL_IMAGE_URL}">
+    <!-- social-preview:end -->"""
+
+
+def add_social_metadata_to_site(output: Path) -> None:
+    for path in output.rglob("*.html"):
+        document = path.read_text(encoding="utf-8")
+        title_match = re.search(r"<title>(.*?)</title>", document, flags=re.DOTALL | re.IGNORECASE)
+        head_match = re.search(r"</head>", document, flags=re.IGNORECASE)
+        if not title_match or not head_match:
+            continue
+
+        relative = path.relative_to(output).as_posix()
+        og_type = "article" if relative.startswith(("posts/", "viagens/")) and not relative.endswith("/index.html") else "website"
+        metadata = social_metadata(title_match.group(1).strip(), public_url_for_html(output, path), og_type)
+
+        if SOCIAL_META_PATTERN.search(document):
+            document = SOCIAL_META_PATTERN.sub(metadata, document, count=1)
+        else:
+            document = document[:head_match.start()] + metadata + "\n" + document[head_match.start():]
+        path.write_text(document, encoding="utf-8")
 
 
 def media_html(entry: Entry, prefix: str = "") -> str:
@@ -577,6 +643,7 @@ def build(source: Path, output: Path) -> None:
         write_entry_page(output, entry)
     for album in travel_albums:
         write_travel_album_page(output, album)
+    add_social_metadata_to_site(output)
 
     print(f"Site montado em {output}")
     print(f"Postagens publicadas pelo painel: {len(entries)}")

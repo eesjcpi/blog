@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>Página não encontrada | EE São José</title>
+    <script>
+        const sectionRedirects = {
+            "/sobre/": "/#sobre",
+            "/sore/": "/#sobre",
+            "/avisos/": "/#avisos",
+            "/projetos/": "/#projetos",
+            "/viagens/": "/#viagens",
+            "/galeria/": "/#galeria",
+            "/instagram/": "/#instagram",
+            "/vestibular/": "/#vestibular",
+            "/contato/": "/#contato"
+        };
+
+        const path = window.location.pathname.endsWith("/")
+            ? window.location.pathname
+            : `${window.location.pathname}/`;
+        const target = sectionRedirects[path.toLowerCase()];
+
+        if (target) {
+            window.location.replace(target);
+        }
+    </script>
+    <style>
+        body {
+            display: grid;
+            min-height: 100vh;
+            margin: 0;
+            place-items: center;
+            background: #f7f8ff;
+            color: #111338;
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+        }
+
+        main {
+            padding: 24px;
+        }
+
+        a {
+            color: #24115f;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Página não encontrada</h1>
+        <p>O endereço informado não existe ou foi alterado.</p>
+        <a href="/">Voltar ao site da EE São José</a>
+    </main>
+</body>
+</html>
