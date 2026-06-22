@@ -23,7 +23,7 @@ jobs:
       - name: Baixar repositório
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: main
 
       - name: Configurar Python
         uses: actions/setup-python@v5
