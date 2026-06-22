@@ -4,5 +4,10 @@
   "titulo": "Viagem do Conhecimento",
   "destino": "Foz do Iguaçu",
   "resumo": "testando descricao",
-  "capa": "/assets/uploads/captura-de-tela-2026-06-16-102615.png"
+  "capa": "/assets/uploads/captura-de-tela-2026-06-16-102615.png",
+  "fotos": [
+    {
+      "imagem": "/assets/uploads/captura-de-tela-2026-06-22-105323.png"
+    }
+  ]
 }
