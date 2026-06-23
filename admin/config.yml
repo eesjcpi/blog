@@ -27,19 +27,20 @@ slug:
   sanitize_replacement: "-"
 
 collections:
-  - name: postagens
-    label: Postagens
-    label_singular: Postagem
-    description: Avisos, projetos, galeria, Instagram e vestibular. Para viagens, use a coleção "Viagens".
+  - name: projetos
+    label: Projetos
+    label_singular: Projeto
+    description: Ações pedagógicas, culturais, esportivas e ambientais da escola.
     folder: content/postagens
     create: true
     delete: true
     extension: json
     format: json
+    filter: { field: categoria, value: projetos }
     identifier_field: titulo
-    summary: "{{categoria}} — {{titulo}}"
+    summary: "{{data}} — {{titulo}}"
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    sortable_fields: [data, titulo, categoria]
+    sortable_fields: [data, titulo]
     fields:
       - label: Título
         name: titulo
@@ -47,13 +48,8 @@ collections:
 
       - label: Categoria
         name: categoria
-        widget: select
-        options:
-          - { label: "Avisos", value: "avisos" }
-          - { label: "Projetos", value: "projetos" }
-          - { label: "Galeria", value: "galeria" }
-          - { label: "Instagram", value: "instagram" }
-          - { label: "Vestibular", value: "vestibular" }
+        widget: hidden
+        default: projetos
 
       - label: Data
         name: data
@@ -61,48 +57,134 @@ collections:
         date_format: "DD/MM/YYYY"
         time_format: "HH:mm"
         format: "YYYY-MM-DDTHH:mm:ssZ"
+        default: "{{now}}"
 
-      - label: Resumo
+      - label: Descrição curta
         name: resumo
         widget: text
-        hint: Texto curto exibido no card da página inicial.
+        hint: Texto que aparecerá junto ao projeto na página inicial.
 
-      - label: Conteúdo completo
-        name: body
-        widget: markdown
-        required: false
-
-      - label: Imagem
+      - label: Imagem de capa
         name: imagem
         widget: image
-        required: false
-        hint: Para Instagram, esta será a capa do card. Se não escolher, o site tentará obter automaticamente a capa da publicação.
+        hint: Imagem principal do projeto.
 
-      - label: Link da publicação no Instagram
-        name: instagram_url
-        widget: string
+      - label: Texto adicional
+        name: body
+        widget: text
         required: false
-        pattern:
-          - "^https://(www\\.)?instagram\\.com/(p|reel|tv)/.+"
-          - "Informe um link válido de publicação ou reel do Instagram."
-        hint: Obrigatório para a categoria Instagram. Também pode ser usado em Projetos.
+        hint: Opcional. Use somente se quiser acrescentar um texto maior na página do projeto.
 
-      - label: Link externo
-        name: link_externo
-        widget: string
-        required: false
-        hint: Útil para vestibulares, formulários e páginas externas.
-
-      - label: Publicado
+      - label: Exibir no site
         name: publicado
         widget: boolean
         default: true
 
-      - label: Destaque
-        name: destaque
-        widget: boolean
-        default: false
+  - name: galeria
+    label: Galeria
+    label_singular: Foto da galeria
+    description: Fotos em destaque da escola e da comunidade escolar.
+    folder: content/postagens
+    create: true
+    delete: true
+    extension: json
+    format: json
+    filter: { field: categoria, value: galeria }
+    identifier_field: titulo
+    summary: "{{data}} — {{titulo}}"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    sortable_fields: [data, titulo]
+    fields:
+      - { label: Título, name: titulo, widget: string }
+      - { label: Categoria, name: categoria, widget: hidden, default: galeria }
+      - label: Data
+        name: data
+        widget: datetime
+        date_format: "DD/MM/YYYY"
+        time_format: "HH:mm"
+        format: "YYYY-MM-DDTHH:mm:ssZ"
+        default: "{{now}}"
+      - label: Imagem
+        name: imagem
+        widget: image
+      - label: Legenda
+        name: resumo
+        widget: text
         required: false
+        hint: Opcional. Pequena descrição da foto.
+      - { label: Exibir no site, name: publicado, widget: boolean, default: true }
+
+  - name: instagram
+    label: Instagram
+    label_singular: Publicação do Instagram
+    description: Publicações e reels do perfil oficial da escola.
+    folder: content/postagens
+    create: true
+    delete: true
+    extension: json
+    format: json
+    filter: { field: categoria, value: instagram }
+    identifier_field: titulo
+    summary: "{{data}} — {{titulo}}"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    sortable_fields: [data, titulo]
+    fields:
+      - { label: Título, name: titulo, widget: string }
+      - { label: Categoria, name: categoria, widget: hidden, default: instagram }
+      - label: Data
+        name: data
+        widget: datetime
+        date_format: "DD/MM/YYYY"
+        time_format: "HH:mm"
+        format: "YYYY-MM-DDTHH:mm:ssZ"
+        default: "{{now}}"
+      - label: Descrição
+        name: resumo
+        widget: text
+        hint: Texto que aparecerá abaixo da imagem.
+      - label: Link da publicação
+        name: instagram_url
+        widget: string
+        pattern:
+          - "^https://(www\\.)?instagram\\.com/(p|reel|tv)/.+"
+          - "Informe um link válido de publicação ou reel do Instagram."
+        hint: Cole aqui o link da publicação. A imagem será obtida automaticamente.
+      - { label: Exibir no site, name: publicado, widget: boolean, default: true }
+
+  - name: vestibular
+    label: Vestibular
+    label_singular: Link de vestibular
+    description: Inscrições, processos seletivos e oportunidades para estudantes.
+    folder: content/postagens
+    create: true
+    delete: true
+    extension: json
+    format: json
+    filter: { field: categoria, value: vestibular }
+    identifier_field: titulo
+    summary: "{{data}} — {{titulo}}"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    sortable_fields: [data, titulo]
+    fields:
+      - { label: Título, name: titulo, widget: string }
+      - { label: Categoria, name: categoria, widget: hidden, default: vestibular }
+      - label: Data
+        name: data
+        widget: datetime
+        date_format: "DD/MM/YYYY"
+        time_format: "HH:mm"
+        format: "YYYY-MM-DDTHH:mm:ssZ"
+        default: "{{now}}"
+      - label: Descrição curta
+        name: resumo
+        widget: text
+      - label: Link para inscrição ou informações
+        name: link_externo
+        widget: string
+        pattern:
+          - "^https?://.+"
+          - "Informe um link completo começando com http:// ou https://."
+      - { label: Exibir no site, name: publicado, widget: boolean, default: true }
 
   - name: viagens
     label: Viagens

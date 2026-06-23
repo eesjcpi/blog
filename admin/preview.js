@@ -40,16 +40,6 @@
         });
     }
 
-    function noticeCard(title, summary, date) {
-        return h(
-            "article",
-            { className: "preview-notice-card" },
-            h("span", {}, date),
-            h("h3", {}, title),
-            h("p", {}, summary)
-        );
-    }
-
     function projectCard(props, title, summary) {
         return h(
             "article",
@@ -114,7 +104,7 @@
     var PostPreview = createClass({
         render: function () {
             var entry = this.props.entry;
-            var category = field(entry, "categoria", "avisos");
+            var category = field(entry, "categoria", "projetos");
             var title = field(entry, "titulo", "Título da postagem");
             var summary = field(entry, "resumo", "O resumo da postagem aparecerá aqui.");
             var date = formattedDate(field(entry, "data", ""));
@@ -129,10 +119,10 @@
             } else if (category === "vestibular") {
                 card = admissionCard(title, summary, date);
             } else {
-                card = noticeCard(title, summary, date);
+                card = projectCard(this.props, title, summary);
             }
 
-            return h(
+            var sections = [
                 "main",
                 { className: "preview-page" },
                 h(
@@ -142,20 +132,29 @@
                     h("h1", {}, "Como aparecerá na página inicial"),
                     h("p", {}, "Esta área é atualizada enquanto você preenche o formulário.")
                 ),
-                h("section", { className: "preview-stage preview-stage-" + category }, card),
-                h(
-                    "section",
-                    { className: "preview-content" },
-                    h("span", {}, "Página completa da postagem"),
-                    h("h2", {}, title),
-                    h("p", { className: "preview-summary" }, summary),
-                    h("div", { className: "preview-body" }, this.props.widgetFor("body"))
-                )
-            );
+                h("section", { className: "preview-stage preview-stage-" + category }, card)
+            ];
+
+            if (category === "projetos") {
+                sections.push(
+                    h(
+                        "section",
+                        { className: "preview-content" },
+                        h("span", {}, "Página do projeto"),
+                        h("h2", {}, title),
+                        h("p", { className: "preview-summary" }, summary),
+                        h("div", { className: "preview-body" }, this.props.widgetFor("body"))
+                    )
+                );
+            }
+
+            return h.apply(null, sections);
         },
     });
 
-    CMS.registerPreviewTemplate("postagens", PostPreview);
+    ["projetos", "galeria", "instagram", "vestibular"].forEach(function (collection) {
+        CMS.registerPreviewTemplate(collection, PostPreview);
+    });
 
     var TravelPreview = createClass({
         render: function () {

@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 
-CATEGORIES = {"avisos", "projetos", "galeria", "instagram", "vestibular"}
+CATEGORIES = {"projetos", "galeria", "instagram", "vestibular"}
 EXCLUDED_NAMES = {
     ".git",
     ".github",
@@ -26,7 +26,6 @@ EXCLUDED_NAMES = {
 
 SECTION_ROUTES = {
     "sobre": "sobre",
-    "avisos": "avisos",
     "projetos": "projetos",
     "viagens": "viagens",
     "galeria": "galeria",
@@ -242,6 +241,18 @@ def copy_static_site(source: Path, output: Path) -> None:
     (output / ".nojekyll").write_text("", encoding="utf-8")
 
 
+def remove_obsolete_notice_links(output: Path) -> None:
+    notice_link = re.compile(
+        r'\s*<a href="/(?:#)?avisos/?">Avisos</a>',
+        flags=re.IGNORECASE,
+    )
+    for path in output.rglob("*.html"):
+        document = path.read_text(encoding="utf-8")
+        updated = notice_link.sub("", document)
+        if updated != document:
+            path.write_text(updated, encoding="utf-8")
+
+
 def download_instagram_previews(entries: list[Entry], output: Path) -> None:
     image_dir = output / "assets" / "img"
     image_dir.mkdir(parents=True, exist_ok=True)
@@ -369,13 +380,6 @@ def card_html(entry: Entry) -> str:
     title = html.escape(entry.title)
     summary = html.escape(entry.summary)
     page = html.escape(entry.page_path, quote=True)
-
-    if entry.category == "avisos":
-        return (
-            f'<article class="cms-notice-card" data-post>'
-            f'<span>{entry.date_label}</span><h3><a href="{page}">{title}</a></h3>'
-            f"<p>{summary}</p></article>"
-        )
 
     if entry.category == "projetos":
         media_class = "project-media is-instagram" if entry.instagram_url else "project-media"
@@ -645,12 +649,12 @@ def build(source: Path, output: Path) -> None:
     entries = load_entries(source)
     travel_albums = load_travel_albums(source)
     copy_static_site(source, output)
+    remove_obsolete_notice_links(output)
     download_instagram_previews(entries, output)
 
     index_path = output / "index.html"
     index_html = index_path.read_text(encoding="utf-8")
     targets = {
-        "avisos": '<div class="notice-grid">',
         "projetos": '<div class="project-grid">',
         "galeria": '<div class="gallery-grid">',
         "instagram": '<div class="instagram-grid">',
@@ -660,14 +664,6 @@ def build(source: Path, output: Path) -> None:
     for category, opening in targets.items():
         cards = "\n".join(card_html(entry) for entry in entries if entry.category == category)
         if cards:
-            if category == "avisos":
-                index_html = re.sub(
-                    r'\s*<div class="notice-empty">.*?</div>',
-                    "",
-                    index_html,
-                    count=1,
-                    flags=re.DOTALL,
-                )
             index_html = insert_after_opening(
                 index_html,
                 opening,

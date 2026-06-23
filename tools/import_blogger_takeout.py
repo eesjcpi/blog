@@ -862,7 +862,6 @@ def institutional_nav_html(prefix: str = "", active: str = "home") -> str:
         <a href="/"{current_home}>Início</a>
         <a href="/#sobre">Sobre</a>
         <a href="/#viagens">Viagens</a>
-        <a href="/#avisos">Avisos</a>
         <a href="/#projetos">Projetos</a>
         <a href="/#galeria">Galeria</a>
         <a href="/#instagram">Instagram</a>
@@ -933,7 +932,6 @@ def portal_footer_html(prefix: str = "") -> str:
             <div>
                 <h2>Navegação</h2>
                 <a href="/#sobre">Sobre a escola</a>
-                <a href="/#avisos">Avisos</a>
                 <a href="/#projetos">Projetos escolares</a>
                 <a href="/#viagens">Viagens do conhecimento</a>
                 <a href="/#galeria">Galeria</a>
@@ -961,9 +959,9 @@ def hero_section_html(blog_title: str, posts: list[Post]) -> str:
         <div class="hero-copy">
             <span class="eyebrow">Vicentina/MS</span>
             <h1>{html.escape(blog_title)}: escola, comunidade e aprendizagem em movimento.</h1>
-            <p>Um espaço institucional para acompanhar avisos, projetos, registros da comunidade escolar e serviços importantes para estudantes e famílias.</p>
+            <p>Um espaço institucional para acompanhar projetos, registros da comunidade escolar e serviços importantes para estudantes e famílias.</p>
             <div class="hero-actions">
-                <a class="primary-action" href="/#avisos">Ver avisos</a>
+                <a class="primary-action" href="/#projetos">Ver projetos</a>
                 <a class="secondary-action" href="/#sobre">Conhecer a escola</a>
             </div>
         </div>
@@ -995,30 +993,6 @@ def about_section_html() -> str:
                 <span>Comunidade</span>
                 <p>Valorizar a participação de estudantes, famílias, professores e parceiros locais na vida escolar.</p>
             </article>
-        </div>
-    </section>
-    """
-
-
-def notices_section_html(events: list[Event]) -> str:
-    if not events:
-        cards = """
-        <div class="notice-empty">
-            <strong>Nenhum aviso publicado no momento</strong>
-            <span>Quando houver comunicados oficiais, eles aparecerão nesta área.</span>
-        </div>
-        """
-    else:
-        cards = "".join(portal_event_card_html(event) for event in events)
-    return f"""
-    <section class="content-section notice-section" id="avisos" aria-label="Notícias e avisos">
-        <div class="section-heading compact-heading">
-            <span>Notícias e avisos</span>
-            <h2>Comunicados oficiais</h2>
-            <p>Informações institucionais publicadas pela escola.</p>
-        </div>
-        <div class="notice-grid">
-            {cards}
         </div>
     </section>
     """
@@ -1170,7 +1144,6 @@ def write_portal_index(project_dir: Path, blog_title: str, posts: list[Post], ev
     <main class="portal-main">
         {hero_section_html(blog_title, posts)}
         {about_section_html()}
-        {notices_section_html(events)}
         {projects_section_html(posts)}
         {gallery_section_html(posts)}
         {instagram_section_html(posts)}

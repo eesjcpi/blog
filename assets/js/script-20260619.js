@@ -50,7 +50,6 @@ const sectionRoutes = {
     "/": "inicio",
     "/sobre/": "sobre",
     "/sore/": "sobre",
-    "/avisos/": "avisos",
     "/projetos/": "projetos",
     "/viagens/": "viagens",
     "/galeria/": "galeria",
